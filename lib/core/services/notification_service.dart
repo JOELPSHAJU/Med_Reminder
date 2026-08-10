@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
@@ -82,6 +82,9 @@ class NotificationService {
     if (androidImplementation != null) {
       await androidImplementation.requestNotificationsPermission();
       await androidImplementation.requestExactAlarmsPermission();
+      // Request battery optimization exemption so alarms survive
+      // aggressive OEM power management (MIUI, OneUI, ColorOS, etc.)
+      await _requestBatteryOptimizationExemption();
     }
 
     final iosImplementation =
@@ -93,6 +96,20 @@ class NotificationService {
         badge: true,
         sound: true,
       );
+    }
+  }
+
+  /// Requests the user to disable battery optimization for this app.
+  /// This ensures AlarmManager exact alarms fire even when the app is
+  /// force-stopped or the device is in Doze mode on OEM Android devices.
+  Future<void> _requestBatteryOptimizationExemption() async {
+    try {
+      const platform = MethodChannel('med_reminder/battery');
+      await platform.invokeMethod('requestBatteryOptimization');
+    } on PlatformException {
+      // Not supported on this device/version — safe to ignore
+    } catch (_) {
+      // Fallback: ignore silently
     }
   }
 
