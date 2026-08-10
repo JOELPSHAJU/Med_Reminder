@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:med_reminder/core/services/notification_service.dart';
+
 import 'package:med_reminder/core/theme/app_colors.dart';
 import 'package:med_reminder/features/settings/presentation/providers/settings_provider.dart';
 
@@ -194,42 +194,7 @@ class SettingsScreen extends ConsumerWidget {
               ],
             ),
           ),
-          const SizedBox(height: 24),
 
-          // Section: Testing & Actions
-          Text(
-            'Diagnostics & Testing',
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 15,
-              fontWeight: FontWeight.bold,
-              color: AppColors.primary,
-            ),
-          ),
-          const SizedBox(height: 10),
-
-          Card(
-            child: ListTile(
-              leading:
-                  const Icon(Icons.notifications_none_rounded, color: AppColors.primary),
-              title: Text(
-                'Send Test Notification',
-                style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600),
-              ),
-              subtitle:
-                  const Text('Test local notification system on this device'),
-              trailing: const Icon(Icons.chevron_right_rounded),
-              onTap: () async {
-                await NotificationService().showTestNotification();
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Test notification sent to device!'),
-                    ),
-                  );
-                }
-              },
-            ),
-          ),
         ],
       ),
     );
