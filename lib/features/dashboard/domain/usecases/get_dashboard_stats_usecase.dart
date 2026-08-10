@@ -20,13 +20,13 @@ class DashboardStats {
   });
 
   factory DashboardStats.empty() => DashboardStats(
-        totalDoses: 0,
-        pendingCount: 0,
-        takenCount: 0,
-        missedCount: 0,
-        skippedCount: 0,
-        completionPercentage: 0.0,
-      );
+    totalDoses: 0,
+    pendingCount: 0,
+    takenCount: 0,
+    missedCount: 0,
+    skippedCount: 0,
+    completionPercentage: 0.0,
+  );
 }
 
 class GetDashboardStatsUseCase {

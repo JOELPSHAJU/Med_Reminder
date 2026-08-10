@@ -1,7 +1,15 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import '../constants/app_constants.dart';
+
+/// Top-level handler required for background notification taps (Android).
+/// Must be a top-level function (not a class method).
+@pragma('vm:entry-point')
+void _notificationBackgroundHandler(NotificationResponse details) {
+  // Handle background notification tap — payload contains occurrenceId
+}
 
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
@@ -16,7 +24,9 @@ class NotificationService {
   Future<void> init() async {
     if (_initialized) return;
 
+    // Initialize all timezone data and set local timezone
     tz.initializeTimeZones();
+    _setLocalTimezone();
 
     const androidSettings =
         AndroidInitializationSettings('@mipmap/ic_launcher');
@@ -34,11 +44,35 @@ class NotificationService {
     await _notificationsPlugin.initialize(
       initSettings,
       onDidReceiveNotificationResponse: (details) {
-        // Notification payload handled if necessary
+        // Foreground / tapped notification — payload contains occurrenceId
       },
+      onDidReceiveBackgroundNotificationResponse: _notificationBackgroundHandler,
     );
 
     _initialized = true;
+  }
+
+  /// Maps the device's local UTC offset to a named timezone location.
+  void _setLocalTimezone() {
+    try {
+      final now = DateTime.now();
+      final offset = now.timeZoneOffset;
+      final locations = tz.timeZoneDatabase.locations;
+
+      tz.Location? match;
+      for (final loc in locations.values) {
+        final tzNow = tz.TZDateTime.now(loc);
+        if (tzNow.timeZoneOffset == offset) {
+          match = loc;
+          break;
+        }
+      }
+      if (match != null) {
+        tz.setLocalLocation(match);
+      }
+    } catch (_) {
+      // Fall back to UTC if detection fails
+    }
   }
 
   Future<void> requestPermissions() async {
@@ -92,12 +126,19 @@ class NotificationService {
       showWhen: true,
       enableVibration: true,
       playSound: true,
+      // Teal tint matching app theme (#00796B)
+      color: Color(0xFF00796B),
+      ledColor: Color(0xFF00796B),
+      ledOnMs: 1000,
+      ledOffMs: 500,
     );
 
     const iosDetails = DarwinNotificationDetails(
       presentAlert: true,
       presentBadge: true,
       presentSound: true,
+      // Group notifications by medicine name on iOS
+      threadIdentifier: 'med_reminder_doses',
     );
 
     const notificationDetails = NotificationDetails(
@@ -107,7 +148,7 @@ class NotificationService {
 
     await _notificationsPlugin.zonedSchedule(
       id,
-      'Time to take $medicineName',
+      '💊 Time to take $medicineName',
       body,
       tzScheduledDate,
       notificationDetails,
@@ -134,13 +175,18 @@ class NotificationService {
       channelDescription: AppConstants.notificationChannelDescription,
       importance: Importance.max,
       priority: Priority.high,
+      color: Color(0xFF00796B),
     );
-    const iosDetails = DarwinNotificationDetails();
+    const iosDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+    );
     const details = NotificationDetails(android: androidDetails, iOS: iosDetails);
 
     await _notificationsPlugin.show(
       99999,
-      'Medicine Reminder Test',
+      '💊 Med Reminder',
       'Notifications are configured and working properly!',
       details,
     );
