@@ -5,13 +5,16 @@ import 'package:med_reminder/core/utils/date_formatter.dart';
 import 'package:med_reminder/features/medicine_core/data/models/dose_occurrence_model.dart';
 import 'package:med_reminder/features/medicine_core/data/models/dose_status_enum.dart';
 
-class HistoryItemWidget extends StatelessWidget {
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:med_reminder/features/dashboard/presentation/providers/dashboard_providers.dart';
+
+class HistoryItemWidget extends ConsumerWidget {
   final DoseOccurrenceModel occurrence;
 
   const HistoryItemWidget({super.key, required this.occurrence});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
@@ -59,7 +62,66 @@ class HistoryItemWidget extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    _buildStatusPill(),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _buildStatusPill(),
+                        if (occurrence.status != DoseStatusEnum.pending) ...[
+                          const SizedBox(width: 6),
+                          InkWell(
+                            onTap: () {
+                              ref
+                                  .read(medicineStateNotifierProvider.notifier)
+                                  .updateOccurrenceStatus(
+                                    occurrence.id,
+                                    DoseStatusEnum.pending,
+                                  );
+                              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                      'Reset ${occurrence.medicineNameSnapshot} to Pending'),
+                                  duration: const Duration(seconds: 2),
+                                ),
+                              );
+                            },
+                            borderRadius: BorderRadius.circular(8),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: isDark
+                                    ? Colors.white.withValues(alpha: 0.1)
+                                    : Colors.black.withValues(alpha: 0.06),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.undo_rounded,
+                                    size: 13,
+                                    color: isDark
+                                        ? AppColors.darkTextSecondary
+                                        : AppColors.lightTextSecondary,
+                                  ),
+                                  const SizedBox(width: 2),
+                                  Text(
+                                    'Undo',
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.bold,
+                                      color: isDark
+                                          ? AppColors.darkTextSecondary
+                                          : AppColors.lightTextSecondary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
                   ],
                 ),
                 const SizedBox(height: 3),

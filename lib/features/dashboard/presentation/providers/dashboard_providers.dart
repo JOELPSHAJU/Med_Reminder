@@ -120,13 +120,27 @@ final todayOccurrencesProvider = Provider<List<DoseOccurrenceModel>>((ref) {
   return filtered;
 });
 
-/// Only pending (upcoming) doses for today — used by the dashboard list.
-/// Taken, skipped, and missed doses are excluded.
+/// Only pending (upcoming) doses scheduled after current time — used by the dashboard list.
+/// Past doses, taken, skipped, and missed doses are excluded from the front page.
 final upcomingOccurrencesProvider = Provider<List<DoseOccurrenceModel>>((ref) {
   final all = ref.watch(todayOccurrencesProvider);
-  return all
-      .where((occ) => occ.status == DoseStatusEnum.pending)
-      .toList();
+  final targetDate = ref.watch(selectedDashboardDateProvider);
+  final now = DateTime.now();
+
+  final isToday = targetDate.year == now.year &&
+      targetDate.month == now.month &&
+      targetDate.day == now.day;
+
+  return all.where((occ) {
+    if (occ.status != DoseStatusEnum.pending) return false;
+
+    if (isToday) {
+      final effectiveTime = occ.snoozedUntil ?? occ.scheduledDateTime;
+      return effectiveTime.isAfter(now.subtract(const Duration(minutes: 1)));
+    }
+
+    return targetDate.isAfter(now);
+  }).toList();
 });
 
 final dashboardStatsProvider = Provider<DashboardStats>((ref) {

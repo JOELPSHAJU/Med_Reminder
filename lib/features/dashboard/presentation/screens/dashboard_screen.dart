@@ -331,6 +331,30 @@ class DashboardScreen extends ConsumerWidget {
                               occ.id,
                               DoseStatusEnum.taken,
                             );
+
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                  '${occ.medicineNameSnapshot} marked as Taken'),
+                              action: SnackBarAction(
+                                label: 'UNDO',
+                                textColor: AppColors.primary,
+                                onPressed: () {
+                                  ref
+                                      .read(medicineStateNotifierProvider
+                                          .notifier)
+                                      .updateOccurrenceStatus(
+                                        occ.id,
+                                        DoseStatusEnum.pending,
+                                      );
+                                },
+                              ),
+                              duration: const Duration(seconds: 4),
+                            ),
+                          );
+                        }
                       },
                       onSnooze: () {
                         showModalBottomSheet(
@@ -359,6 +383,30 @@ class DashboardScreen extends ConsumerWidget {
                               occ.id,
                               DoseStatusEnum.skipped,
                             );
+
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                  '${occ.medicineNameSnapshot} marked as Skipped'),
+                              action: SnackBarAction(
+                                label: 'UNDO',
+                                textColor: AppColors.primary,
+                                onPressed: () {
+                                  ref
+                                      .read(medicineStateNotifierProvider
+                                          .notifier)
+                                      .updateOccurrenceStatus(
+                                        occ.id,
+                                        DoseStatusEnum.pending,
+                                      );
+                                },
+                              ),
+                              duration: const Duration(seconds: 4),
+                            ),
+                          );
+                        }
                       },
                       onUndo: () {
                         ref
