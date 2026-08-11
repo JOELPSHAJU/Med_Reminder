@@ -35,6 +35,7 @@ class DashboardScreen extends ConsumerWidget {
     final selectedDate = ref.watch(selectedDashboardDateProvider);
     final stats = ref.watch(dashboardStatsProvider);
     final todayReminders = ref.watch(todayOccurrencesProvider);
+    final upcomingReminders = ref.watch(upcomingOccurrencesProvider);
     final settings = ref.watch(settingsProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -148,14 +149,16 @@ class DashboardScreen extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Today Reminders',
+                        'Upcoming Doses',
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       Text(
-                        '${todayReminders.length} dose${todayReminders.length == 1 ? '' : 's'} scheduled',
+                        upcomingReminders.isEmpty
+                            ? '${todayReminders.length} dose${todayReminders.length == 1 ? '' : 's'} today — all done!'
+                            : '${upcomingReminders.length} remaining of ${todayReminders.length}',
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 12,
                           color: isDark
@@ -205,7 +208,7 @@ class DashboardScreen extends ConsumerWidget {
               const SizedBox(height: 12),
 
               // Reminders List or Empty State
-              if (todayReminders.isEmpty)
+              if (upcomingReminders.isEmpty)
                 Center(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 40),
@@ -218,14 +221,16 @@ class DashboardScreen extends ConsumerWidget {
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(
-                            Icons.check_circle_outline_rounded,
+                            Icons.check_circle_rounded,
                             size: 56,
                             color: AppColors.primary,
                           ),
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          'No Doses Scheduled',
+                          todayReminders.isEmpty
+                              ? 'No Doses Scheduled'
+                              : 'All Caught Up! 🎉',
                           style: GoogleFonts.plusJakartaSans(
                             fontSize: 17,
                             fontWeight: FontWeight.bold,
@@ -233,7 +238,9 @@ class DashboardScreen extends ConsumerWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Tap + button below to schedule a new medicine.',
+                          todayReminders.isEmpty
+                              ? 'Tap + below to schedule a new medicine.'
+                              : 'All doses for today are completed.',
                           style: GoogleFonts.plusJakartaSans(
                             color: isDark
                                 ? AppColors.darkTextSecondary
@@ -249,9 +256,9 @@ class DashboardScreen extends ConsumerWidget {
                 ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  itemCount: todayReminders.length > 5 ? 5 : todayReminders.length,
+                  itemCount: upcomingReminders.length > 5 ? 5 : upcomingReminders.length,
                   itemBuilder: (context, index) {
-                    final occ = todayReminders[index];
+                    final occ = upcomingReminders[index];
                     return ReminderItemWidget(
                       occurrence: occ,
                       onTaken: () async {

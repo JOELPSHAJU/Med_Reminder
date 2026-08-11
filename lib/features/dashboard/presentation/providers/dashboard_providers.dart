@@ -120,6 +120,15 @@ final todayOccurrencesProvider = Provider<List<DoseOccurrenceModel>>((ref) {
   return filtered;
 });
 
+/// Only pending (upcoming) doses for today — used by the dashboard list.
+/// Taken, skipped, and missed doses are excluded.
+final upcomingOccurrencesProvider = Provider<List<DoseOccurrenceModel>>((ref) {
+  final all = ref.watch(todayOccurrencesProvider);
+  return all
+      .where((occ) => occ.status == DoseStatusEnum.pending)
+      .toList();
+});
+
 final dashboardStatsProvider = Provider<DashboardStats>((ref) {
   final occurrences = ref.watch(allOccurrencesProvider);
   final targetDate = ref.watch(selectedDashboardDateProvider);
