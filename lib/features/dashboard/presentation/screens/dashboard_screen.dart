@@ -7,9 +7,9 @@ import 'package:med_reminder/features/dashboard/presentation/providers/dashboard
 import 'package:med_reminder/features/dashboard/presentation/widgets/reminder_item_widget.dart';
 import 'package:med_reminder/features/dashboard/presentation/widgets/snooze_modal_dialog.dart';
 import 'package:med_reminder/features/dashboard/presentation/widgets/stats_card_widget.dart';
+import 'package:med_reminder/features/history/presentation/screens/history_screen.dart';
 import 'package:med_reminder/features/medicine_core/data/models/dose_status_enum.dart';
 import 'package:med_reminder/features/settings/presentation/providers/settings_provider.dart';
-import 'package:med_reminder/main.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -165,11 +165,13 @@ class DashboardScreen extends ConsumerWidget {
                       ),
                     ],
                   ),
-                  if (todayReminders.length > 5)
-                    GestureDetector(
+                  GestureDetector(
                       onTap: () {
-                        // Switch to History tab via global notifier
-                        navTabNotifier.value = 1;
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const HistoryScreen(),
+                          ),
+                        );
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(
