@@ -1,6 +1,5 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import '../constants/app_constants.dart';
@@ -25,9 +24,9 @@ class NotificationService {
   Future<void> init() async {
     if (_initialized) return;
 
-    // Initialize all timezone data and set local timezone using native device timezone
+    // Initialize all timezone data and set local timezone
     tz.initializeTimeZones();
-    await _setLocalTimezone();
+    _setLocalTimezone();
 
     const androidSettings =
         AndroidInitializationSettings('@mipmap/ic_launcher');
@@ -53,31 +52,29 @@ class NotificationService {
     _initialized = true;
   }
 
-  /// Sets the local timezone location using the device's native IANA timezone name.
-  Future<void> _setLocalTimezone() async {
+  /// Sets the local timezone location using device timezone info and offset matching.
+  void _setLocalTimezone() {
     try {
-      final String timeZoneName = await FlutterTimezone.getLocalTimezone();
-      tz.setLocalLocation(tz.getLocation(timeZoneName));
-    } catch (_) {
-      try {
-        // Fallback: match by offset if IANA lookup fails
-        final now = DateTime.now();
-        final offset = now.timeZoneOffset;
-        final locations = tz.timeZoneDatabase.locations;
+      final now = DateTime.now();
+      final offset = now.timeZoneOffset;
+      final timeZoneName = now.timeZoneName;
 
-        tz.Location? match;
-        for (final loc in locations.values) {
-          final tzNow = tz.TZDateTime.now(loc);
-          if (tzNow.timeZoneOffset == offset) {
-            match = loc;
-            break;
-          }
+      // 1. Try direct timezone name lookup
+      if (tz.timeZoneDatabase.locations.containsKey(timeZoneName)) {
+        tz.setLocalLocation(tz.getLocation(timeZoneName));
+        return;
+      }
+
+      // 2. Match location by current UTC offset
+      final locations = tz.timeZoneDatabase.locations;
+      for (final loc in locations.values) {
+        final tzNow = tz.TZDateTime.now(loc);
+        if (tzNow.timeZoneOffset == offset) {
+          tz.setLocalLocation(loc);
+          return;
         }
-        if (match != null) {
-          tz.setLocalLocation(match);
-        }
-      } catch (_) {}
-    }
+      }
+    } catch (_) {}
   }
 
   Future<void> requestPermissions() async {
