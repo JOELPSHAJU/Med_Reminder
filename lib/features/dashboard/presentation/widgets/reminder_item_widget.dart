@@ -177,7 +177,7 @@ class _ReminderItemWidgetState extends State<ReminderItemWidget> {
                   ),
                   const SizedBox(height: 8),
 
-                  // Scheduled Time & Food Instruction Pills
+                  // Scheduled Time & Relative Countdown & Food Instruction Pills
                   Row(
                     children: [
                       Container(
@@ -210,6 +210,41 @@ class _ReminderItemWidgetState extends State<ReminderItemWidget> {
                           ],
                         ),
                       ),
+                      if (isPending &&
+                          occurrence.scheduledDateTime.isAfter(DateTime.now())) ...[
+                        const SizedBox(width: 6),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: AppColors.primary.withValues(alpha: 0.3),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.hourglass_bottom_rounded,
+                                size: 12,
+                                color: AppColors.primary,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                _getRelativeCountdownText(
+                                    occurrence.scheduledDateTime),
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: 11,
+                                  color: AppColors.primary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                       if (occurrence.foodInstructionSnapshot.isNotEmpty &&
                           occurrence.foodInstructionSnapshot !=
                               'No instruction') ...[
@@ -464,6 +499,28 @@ class _ReminderItemWidgetState extends State<ReminderItemWidget> {
         return AppColors.missedGradient;
       case DoseStatusEnum.skipped:
         return AppColors.skippedGradient;
+    }
+  }
+
+  String _getRelativeCountdownText(DateTime targetTime) {
+    final now = DateTime.now();
+    final diff = targetTime.difference(now);
+
+    if (diff.isNegative) {
+      return 'overdue';
+    }
+
+    final hours = diff.inHours;
+    final minutes = diff.inMinutes.remainder(60);
+
+    if (hours > 0 && minutes > 0) {
+      return 'in $hours ${hours == 1 ? "hour" : "hours"} $minutes ${minutes == 1 ? "min" : "mins"}';
+    } else if (hours > 0) {
+      return 'in $hours ${hours == 1 ? "hour" : "hours"}';
+    } else if (minutes > 0) {
+      return 'in $minutes ${minutes == 1 ? "min" : "mins"}';
+    } else {
+      return 'due now';
     }
   }
 
