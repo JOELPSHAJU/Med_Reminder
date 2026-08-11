@@ -30,7 +30,10 @@ class MedicineListScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final medicines = ref.watch(allMedicinesProvider);
+    final medicines = ref.watch(filteredMedicinesProvider);
+    final allMedicines = ref.watch(allMedicinesProvider);
+    final searchQuery = ref.watch(medicineSearchQueryProvider);
+    final statusFilter = ref.watch(medicineStatusFilterProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
@@ -43,44 +46,138 @@ class MedicineListScreen extends ConsumerWidget {
           ),
         ),
       ),
-      body: medicines.isEmpty
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ClipOval(
-                    child: Image.asset(
-                      'assets/images/app_logo.png',
-                      width: 72,
-                      height: 72,
-                    ),
+      body: Column(
+        children: [
+          // Search & Filter Header
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 8.0),
+            child: Column(
+              children: [
+                // Live Search Input Bar
+                TextField(
+                  onChanged: (val) {
+                    ref.read(medicineSearchQueryProvider.notifier).state = val;
+                  },
+                  decoration: InputDecoration(
+                    hintText: 'Search medicine name, form, strength...',
+                    prefixIcon: const Icon(Icons.search_rounded,
+                        color: AppColors.primary, size: 20),
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    suffixIcon: searchQuery.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(Icons.clear_rounded, size: 18),
+                            onPressed: () {
+                              ref
+                                  .read(medicineSearchQueryProvider.notifier)
+                                  .state = '';
+                            },
+                          )
+                        : null,
                   ),
-                  const SizedBox(height: 14),
-                  Text(
-                    'No Medicines Added Yet',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                ),
+                const SizedBox(height: 10),
+
+                // Status Filter Chips (All, Active, Paused)
+                Row(
+                  children: ['All', 'Active', 'Paused'].map((filter) {
+                    final isSelected = statusFilter == filter;
+                    final count = filter == 'All'
+                        ? allMedicines.length
+                        : filter == 'Active'
+                            ? allMedicines.where((m) => m.isActive).length
+                            : allMedicines.where((m) => !m.isActive).length;
+
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: ChoiceChip(
+                        showCheckmark: false,
+                        selected: isSelected,
+                        label: Text(
+                          '$filter ($count)',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: isSelected
+                                ? Colors.white
+                                : (isDark
+                                    ? AppColors.darkTextPrimary
+                                    : AppColors.lightTextPrimary),
+                          ),
+                        ),
+                        selectedColor: AppColors.primary,
+                        backgroundColor: isDark
+                            ? AppColors.darkSurface
+                            : AppColors.lightSurface,
+                        side: BorderSide(
+                          color: isSelected
+                              ? AppColors.primary
+                              : (isDark
+                                  ? AppColors.darkBorder
+                                  : AppColors.lightBorder),
+                        ),
+                        onSelected: (selected) {
+                          if (selected) {
+                            ref
+                                .read(medicineStatusFilterProvider.notifier)
+                                .state = filter;
+                          }
+                        },
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 4),
+
+          // Medicines List or Empty State
+          Expanded(
+            child: medicines.isEmpty
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ClipOval(
+                          child: Image.asset(
+                            'assets/images/app_logo.png',
+                            width: 72,
+                            height: 72,
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+                        Text(
+                          allMedicines.isEmpty
+                              ? 'No Medicines Added Yet'
+                              : 'No Matching Medicines',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          allMedicines.isEmpty
+                              ? 'Tap + button below to add your first medicine.'
+                              : 'Try clearing search or changing status filter.',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 12,
+                            color: isDark
+                                ? AppColors.darkTextSecondary
+                                : AppColors.lightTextSecondary,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Tap + button below to add your first medicine.',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 12,
-                      color: isDark
-                          ? AppColors.darkTextSecondary
-                          : AppColors.lightTextSecondary,
-                    ),
-                  ),
-                ],
-              ),
-            )
-          : ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              itemCount: medicines.length,
-              itemBuilder: (context, index) {
-                final med = medicines[index];
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 6),
+                    itemCount: medicines.length,
+                    itemBuilder: (context, index) {
+                      final med = medicines[index];
+
 
                 return Container(
                   margin: const EdgeInsets.only(bottom: 10),
@@ -397,10 +494,14 @@ class MedicineListScreen extends ConsumerWidget {
                     ),
                   ),
                 );
-              },
-            ),
+                    },
+                  ),
+          ),
+        ],
+      ),
     );
   }
+
 
   Widget _buildActiveBadge(bool isActive) {
     return Container(

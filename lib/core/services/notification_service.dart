@@ -1,5 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import '../constants/app_constants.dart';
@@ -24,9 +25,9 @@ class NotificationService {
   Future<void> init() async {
     if (_initialized) return;
 
-    // Initialize all timezone data and set local timezone
+    // Initialize all timezone data and set local timezone using native device timezone
     tz.initializeTimeZones();
-    _setLocalTimezone();
+    await _setLocalTimezone();
 
     const androidSettings =
         AndroidInitializationSettings('@mipmap/ic_launcher');
@@ -52,26 +53,30 @@ class NotificationService {
     _initialized = true;
   }
 
-  /// Maps the device's local UTC offset to a named timezone location.
-  void _setLocalTimezone() {
+  /// Sets the local timezone location using the device's native IANA timezone name.
+  Future<void> _setLocalTimezone() async {
     try {
-      final now = DateTime.now();
-      final offset = now.timeZoneOffset;
-      final locations = tz.timeZoneDatabase.locations;
-
-      tz.Location? match;
-      for (final loc in locations.values) {
-        final tzNow = tz.TZDateTime.now(loc);
-        if (tzNow.timeZoneOffset == offset) {
-          match = loc;
-          break;
-        }
-      }
-      if (match != null) {
-        tz.setLocalLocation(match);
-      }
+      final String timeZoneName = await FlutterTimezone.getLocalTimezone();
+      tz.setLocalLocation(tz.getLocation(timeZoneName));
     } catch (_) {
-      // Fall back to UTC if detection fails
+      try {
+        // Fallback: match by offset if IANA lookup fails
+        final now = DateTime.now();
+        final offset = now.timeZoneOffset;
+        final locations = tz.timeZoneDatabase.locations;
+
+        tz.Location? match;
+        for (final loc in locations.values) {
+          final tzNow = tz.TZDateTime.now(loc);
+          if (tzNow.timeZoneOffset == offset) {
+            match = loc;
+            break;
+          }
+        }
+        if (match != null) {
+          tz.setLocalLocation(match);
+        }
+      } catch (_) {}
     }
   }
 
@@ -114,7 +119,11 @@ class NotificationService {
   }
 
   int _getNotificationId(String occurrenceId) {
-    return occurrenceId.hashCode.abs() % 2147483647;
+    int hash = 0;
+    for (int i = 0; i < occurrenceId.length; i++) {
+      hash = (hash * 31 + occurrenceId.codeUnitAt(i)) & 0x7FFFFFFF;
+    }
+    return hash;
   }
 
   Future<void> scheduleDoseNotification({

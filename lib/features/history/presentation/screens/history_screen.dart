@@ -16,6 +16,7 @@ class HistoryScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final occurrences = ref.watch(filteredHistoryOccurrencesProvider);
     final dateFilter = ref.watch(historyDateFilterProvider);
+    final dateRangeFilter = ref.watch(historyDateRangeFilterProvider);
     final statusFilter = ref.watch(historyStatusFilterProvider);
     final timeScope = ref.watch(historyTimeScopeProvider);
     final searchQuery = ref.watch(historySearchQueryProvider);
@@ -101,7 +102,9 @@ class HistoryScreen extends ConsumerWidget {
 
                       const VerticalDivider(width: 16, indent: 6, endIndent: 6),
 
-                      // Date Picker Chip
+                      const VerticalDivider(width: 16, indent: 6, endIndent: 6),
+
+                      // Single Date Picker Chip
                       ActionChip(
                         avatar: Icon(
                           Icons.calendar_today_rounded,
@@ -113,7 +116,7 @@ class HistoryScreen extends ConsumerWidget {
                         label: Text(
                           dateFilter != null
                               ? DateFormatter.formatShortDate(dateFilter)
-                              : 'Date Filter',
+                              : 'Single Date',
                           style: GoogleFonts.plusJakartaSans(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
@@ -146,17 +149,86 @@ class HistoryScreen extends ConsumerWidget {
                                 DateTime.now().add(const Duration(days: 365)),
                           );
                           if (picked != null) {
-                            ref.read(historyDateFilterProvider.notifier).state =
-                                picked;
+                            ref.read(historyDateRangeFilterProvider.notifier).state = null;
+                            ref.read(historyDateFilterProvider.notifier).state = picked;
                           }
                         },
                       ),
                       if (dateFilter != null) ...[
-                        const SizedBox(width: 4),
+                        const SizedBox(width: 2),
                         GestureDetector(
                           onTap: () {
-                            ref.read(historyDateFilterProvider.notifier).state =
-                                null;
+                            ref.read(historyDateFilterProvider.notifier).state = null;
+                          },
+                          child: const Padding(
+                            padding: EdgeInsets.only(right: 6.0),
+                            child: Icon(Icons.cancel_rounded,
+                                size: 18, color: Colors.grey),
+                          ),
+                        ),
+                      ],
+
+                      const SizedBox(width: 6),
+
+                      // Date Range Picker Chip
+                      ActionChip(
+                        avatar: Icon(
+                          Icons.date_range_rounded,
+                          size: 14,
+                          color: dateRangeFilter != null
+                              ? Colors.white
+                              : AppColors.primary,
+                        ),
+                        label: Text(
+                          dateRangeFilter != null
+                              ? '${DateFormatter.formatShortDate(dateRangeFilter.start)} - ${DateFormatter.formatShortDate(dateRangeFilter.end)}'
+                              : 'Date Range',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: dateRangeFilter != null
+                                ? Colors.white
+                                : (isDark
+                                    ? AppColors.darkTextPrimary
+                                    : AppColors.lightTextPrimary),
+                          ),
+                        ),
+                        backgroundColor: dateRangeFilter != null
+                            ? AppColors.primary
+                            : (isDark
+                                ? AppColors.darkSurface
+                                : AppColors.lightSurface),
+                        side: BorderSide(
+                          color: dateRangeFilter != null
+                              ? AppColors.primary
+                              : (isDark
+                                  ? AppColors.darkBorder
+                                  : AppColors.lightBorder),
+                        ),
+                        onPressed: () async {
+                          final picked = await showDateRangePicker(
+                            context: context,
+                            initialDateRange: dateRangeFilter ??
+                                DateTimeRange(
+                                  start: DateTime.now().subtract(const Duration(days: 7)),
+                                  end: DateTime.now(),
+                                ),
+                            firstDate: DateTime.now()
+                                .subtract(const Duration(days: 365)),
+                            lastDate:
+                                DateTime.now().add(const Duration(days: 365)),
+                          );
+                          if (picked != null) {
+                            ref.read(historyDateFilterProvider.notifier).state = null;
+                            ref.read(historyDateRangeFilterProvider.notifier).state = picked;
+                          }
+                        },
+                      ),
+                      if (dateRangeFilter != null) ...[
+                        const SizedBox(width: 2),
+                        GestureDetector(
+                          onTap: () {
+                            ref.read(historyDateRangeFilterProvider.notifier).state = null;
                           },
                           child: const Padding(
                             padding: EdgeInsets.only(right: 6.0),

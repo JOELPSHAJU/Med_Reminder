@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:med_reminder/core/utils/date_formatter.dart';
 import 'package:med_reminder/features/medicine_core/data/models/dose_occurrence_model.dart';
 import 'package:med_reminder/features/medicine_core/data/models/dose_status_enum.dart';
@@ -13,6 +14,7 @@ class FilterHistoryUseCase {
     required List<DoseOccurrenceModel> occurrences,
     required String searchQuery,
     DateTime? selectedDate,
+    DateTimeRange? selectedDateRange,
     DoseStatusEnum? statusFilter,
     HistoryTimeScope timeScope = HistoryTimeScope.pastAndToday,
   }) {
@@ -21,8 +23,8 @@ class FilterHistoryUseCase {
     final endOfToday = DateTime(now.year, now.month, now.day, 23, 59, 59);
 
     return occurrences.where((occ) {
-      // 1. Time Scope Filter (if no specific date is selected)
-      if (selectedDate == null) {
+      // 1. Time Scope Filter (if no specific date/range is selected)
+      if (selectedDate == null && selectedDateRange == null) {
         if (timeScope == HistoryTimeScope.pastAndToday) {
           if (occ.scheduledDateTime.isAfter(endOfToday)) return false;
         } else if (timeScope == HistoryTimeScope.upcoming) {
@@ -42,14 +44,38 @@ class FilterHistoryUseCase {
         }
       }
 
-      // 3. Specific Date Filter
+      // 3. Specific Single Date Filter
       if (selectedDate != null) {
         if (!DateFormatter.isSameDay(occ.scheduledDateTime, selectedDate)) {
           return false;
         }
       }
 
-      // 4. Status Filter
+      // 4. Date Range Filter
+      if (selectedDateRange != null) {
+        final start = DateTime(
+          selectedDateRange.start.year,
+          selectedDateRange.start.month,
+          selectedDateRange.start.day,
+          0,
+          0,
+          0,
+        );
+        final end = DateTime(
+          selectedDateRange.end.year,
+          selectedDateRange.end.month,
+          selectedDateRange.end.day,
+          23,
+          59,
+          59,
+        );
+        if (occ.scheduledDateTime.isBefore(start) ||
+            occ.scheduledDateTime.isAfter(end)) {
+          return false;
+        }
+      }
+
+      // 5. Status Filter
       if (statusFilter != null) {
         if (occ.status != statusFilter) {
           return false;
@@ -61,3 +87,4 @@ class FilterHistoryUseCase {
       ..sort((a, b) => b.scheduledDateTime.compareTo(a.scheduledDateTime));
   }
 }
+

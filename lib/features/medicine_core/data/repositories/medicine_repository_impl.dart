@@ -177,6 +177,11 @@ class MedicineRepositoryImpl implements MedicineRepository {
 
     // 2. Extend rolling generation for ongoing active medicines
     final medicines = _localDataSource.getAllMedicines();
+    final activeMedIds = medicines
+        .where((m) => m.isActive)
+        .map((m) => m.id)
+        .toSet();
+
     final freshOccurrences = _localDataSource.getAllOccurrences();
 
     for (final med in medicines) {
@@ -187,19 +192,27 @@ class MedicineRepositoryImpl implements MedicineRepository {
         );
         if (newGen.isNotEmpty) {
           await _localDataSource.saveOccurrences(newGen);
-          for (final occ in newGen) {
-            if (occ.status == DoseStatusEnum.pending &&
-                occ.scheduledDateTime.isAfter(DateTime.now())) {
-              await _notificationService.scheduleDoseNotification(
-                occurrenceId: occ.id,
-                medicineName: occ.medicineNameSnapshot,
-                doseDetails:
-                    '${occ.doseQuantitySnapshot} ${occ.doseUnitSnapshot}',
-                scheduledDateTime: occ.scheduledDateTime,
-                foodInstruction: occ.foodInstructionSnapshot,
-              );
-            }
-          }
+        }
+      }
+    }
+
+    // 3. Ensure ALL pending occurrences for ACTIVE medicines have alarms scheduled
+    final currentOccurrences = _localDataSource.getAllOccurrences();
+    final now = DateTime.now();
+
+    for (final occ in currentOccurrences) {
+      if (activeMedIds.contains(occ.medicineId) &&
+          occ.status == DoseStatusEnum.pending) {
+        final targetTime = occ.snoozedUntil ?? occ.scheduledDateTime;
+        if (targetTime.isAfter(now)) {
+          await _notificationService.scheduleDoseNotification(
+            occurrenceId: occ.id,
+            medicineName: occ.medicineNameSnapshot,
+            doseDetails:
+                '${occ.doseQuantitySnapshot} ${occ.doseUnitSnapshot}',
+            scheduledDateTime: targetTime,
+            foodInstruction: occ.foodInstructionSnapshot,
+          );
         }
       }
     }

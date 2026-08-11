@@ -96,6 +96,32 @@ final allMedicinesProvider = Provider<List<MedicineModel>>((ref) {
   return repo.getAllMedicines();
 });
 
+final medicineSearchQueryProvider = StateProvider<String>((ref) => '');
+final medicineStatusFilterProvider = StateProvider<String>((ref) => 'All'); // 'All', 'Active', 'Paused'
+
+final filteredMedicinesProvider = Provider<List<MedicineModel>>((ref) {
+  final medicines = ref.watch(allMedicinesProvider);
+  final query = ref.watch(medicineSearchQueryProvider).trim().toLowerCase();
+  final filter = ref.watch(medicineStatusFilterProvider);
+
+  return medicines.where((med) {
+    if (filter == 'Active' && !med.isActive) return false;
+    if (filter == 'Paused' && med.isActive) return false;
+
+    if (query.isNotEmpty) {
+      final nameMatch = med.name.toLowerCase().contains(query);
+      final typeMatch = med.type.toLowerCase().contains(query);
+      final strengthMatch = med.strength.toLowerCase().contains(query);
+      final descMatch = med.description.toLowerCase().contains(query);
+      if (!nameMatch && !typeMatch && !strengthMatch && !descMatch) {
+        return false;
+      }
+    }
+
+    return true;
+  }).toList();
+});
+
 final allOccurrencesProvider = Provider<List<DoseOccurrenceModel>>((ref) {
   ref.watch(medicineStateNotifierProvider);
   final repo = ref.watch(medicineRepositoryProvider);
