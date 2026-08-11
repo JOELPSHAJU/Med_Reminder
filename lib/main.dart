@@ -11,8 +11,13 @@ import 'features/settings/presentation/providers/settings_provider.dart';
 import 'features/settings/presentation/screens/settings_screen.dart';
 import 'features/splash/presentation/screens/splash_screen.dart';
 
+import 'package:google_fonts/google_fonts.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Disable runtime HTTP fetching so app runs smoothly offline without SocketExceptions
+  GoogleFonts.config.allowRuntimeFetching = false;
 
   await HiveService.init();
   await NotificationService().init();
