@@ -31,6 +31,7 @@ class _AddEditMedicineScreenState
   bool _isOngoing = true;
   DateTime _startDate = DateTime.now();
   DateTime? _endDate;
+  bool _isSubmitting = false;
 
   List<DoseInputData> _doses = [];
 
@@ -90,6 +91,7 @@ class _AddEditMedicineScreenState
   }
 
   void _saveMedicine() async {
+    if (_isSubmitting) return;
     if (!_formKey.currentState!.validate()) return;
     if (_doses.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -98,52 +100,69 @@ class _AddEditMedicineScreenState
       return;
     }
 
-    final medicineId = widget.existingMedicine?.id ?? const Uuid().v4();
+    setState(() => _isSubmitting = true);
 
-    final List<DoseModel> doseModels = _doses.map((d) {
-      return DoseModel(
-        id: const Uuid().v4(),
-        medicineId: medicineId,
-        timeHour: d.time.hour,
-        timeMinute: d.time.minute,
-        quantity: d.quantity,
-        unit: d.unit,
-        foodInstruction: d.foodInstruction,
+    try {
+      final medicineId = widget.existingMedicine?.id ?? const Uuid().v4();
+
+      final List<DoseModel> doseModels = _doses.map((d) {
+        return DoseModel(
+          id: const Uuid().v4(),
+          medicineId: medicineId,
+          timeHour: d.time.hour,
+          timeMinute: d.time.minute,
+          quantity: d.quantity,
+          unit: d.unit,
+          foodInstruction: d.foodInstruction,
+        );
+      }).toList();
+
+      final newMedicine = MedicineModel(
+        id: medicineId,
+        name: _nameController.text.trim(),
+        description: _descController.text.trim(),
+        type: _selectedType,
+        strength: _strengthController.text.trim().isEmpty
+            ? '1 dose'
+            : _strengthController.text.trim(),
+        startDate: _startDate,
+        endDate: _isOngoing ? null : _endDate,
+        isOngoing: _isOngoing,
+        isActive: widget.existingMedicine?.isActive ?? true,
+        createdAt: widget.existingMedicine?.createdAt ?? DateTime.now(),
+        doses: doseModels,
       );
-    }).toList();
 
-    final newMedicine = MedicineModel(
-      id: medicineId,
-      name: _nameController.text.trim(),
-      description: _descController.text.trim(),
-      type: _selectedType,
-      strength: _strengthController.text.trim().isEmpty
-          ? '1 dose'
-          : _strengthController.text.trim(),
-      startDate: _startDate,
-      endDate: _isOngoing ? null : _endDate,
-      isOngoing: _isOngoing,
-      isActive: widget.existingMedicine?.isActive ?? true,
-      createdAt: widget.existingMedicine?.createdAt ?? DateTime.now(),
-      doses: doseModels,
-    );
+      await ref
+          .read(medicineStateNotifierProvider.notifier)
+          .addOrUpdateMedicine(newMedicine);
 
-    await ref
-        .read(medicineStateNotifierProvider.notifier)
-        .addOrUpdateMedicine(newMedicine);
-
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            widget.existingMedicine == null
-                ? 'Medicine added successfully!'
-                : 'Medicine updated successfully!',
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              widget.existingMedicine == null
+                  ? 'Medicine added successfully!'
+                  : 'Medicine updated successfully!',
+            ),
+            backgroundColor: AppColors.statusTaken,
           ),
-          backgroundColor: AppColors.statusTaken,
-        ),
-      );
-      Navigator.of(context).pop();
+        );
+        Navigator.of(context).pop();
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error saving medicine: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSubmitting = false);
+      }
     }
   }
 
@@ -162,8 +181,17 @@ class _AddEditMedicineScreenState
         ),
         actions: [
           IconButton(
-            onPressed: _saveMedicine,
-            icon: const Icon(Icons.check_rounded, color: AppColors.primary),
+            onPressed: _isSubmitting ? null : _saveMedicine,
+            icon: _isSubmitting
+                ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: AppColors.primary,
+                    ),
+                  )
+                : const Icon(Icons.check_rounded, color: AppColors.primary),
           ),
         ],
       ),
@@ -475,16 +503,32 @@ class _AddEditMedicineScreenState
                 width: double.infinity,
                 height: 50,
                 child: ElevatedButton(
-                  onPressed: _saveMedicine,
-                  child: Text(
-                    widget.existingMedicine == null
-                        ? 'Save & Schedule Reminders'
-                        : 'Update Medicine Reminders',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  onPressed: _isSubmitting ? null : _saveMedicine,
+                  child: _isSubmitting
+                      ? const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.5,
+                                color: Colors.white,
+                              ),
+                            ),
+                            SizedBox(width: 12),
+                            Text('Saving...'),
+                          ],
+                        )
+                      : Text(
+                          widget.existingMedicine == null
+                              ? 'Save & Schedule Reminders'
+                              : 'Update Medicine Reminders',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                 ),
               ),
               const SizedBox(height: 24),

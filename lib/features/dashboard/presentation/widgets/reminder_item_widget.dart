@@ -5,13 +5,12 @@ import 'package:med_reminder/core/utils/date_formatter.dart';
 import 'package:med_reminder/features/medicine_core/data/models/dose_occurrence_model.dart';
 import 'package:med_reminder/features/medicine_core/data/models/dose_status_enum.dart';
 
-class ReminderItemWidget extends StatelessWidget {
+class ReminderItemWidget extends StatefulWidget {
   final DoseOccurrenceModel occurrence;
   final VoidCallback onTaken;
   final VoidCallback onSnooze;
   final VoidCallback onSkip;
   final VoidCallback? onUndo;
-
   final VoidCallback? onEdit;
 
   const ReminderItemWidget({
@@ -23,6 +22,23 @@ class ReminderItemWidget extends StatelessWidget {
     this.onUndo,
     this.onEdit,
   });
+
+  @override
+  State<ReminderItemWidget> createState() => _ReminderItemWidgetState();
+}
+
+class _ReminderItemWidgetState extends State<ReminderItemWidget> {
+  DateTime? _lastTapTime;
+
+  bool _isThrottled() {
+    final now = DateTime.now();
+    if (_lastTapTime != null &&
+        now.difference(_lastTapTime!).inMilliseconds < 600) {
+      return true;
+    }
+    _lastTapTime = now;
+    return false;
+  }
 
   IconData _getIconForType(String type) {
     switch (type.toLowerCase()) {
@@ -45,6 +61,7 @@ class ReminderItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final occurrence = widget.occurrence;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final statusColor = _getStatusColor(occurrence.status);
     final isPending = occurrence.status == DoseStatusEnum.pending;
@@ -116,10 +133,13 @@ class ReminderItemWidget extends StatelessWidget {
                                 ),
                                 const SizedBox(width: 6),
                                 _buildStatusBadge(),
-                                if (onEdit != null) ...[
+                                if (widget.onEdit != null) ...[
                                   const SizedBox(width: 4),
                                   GestureDetector(
-                                    onTap: onEdit,
+                                    onTap: () {
+                                      if (_isThrottled()) return;
+                                      widget.onEdit!();
+                                    },
                                     child: Container(
                                       padding: const EdgeInsets.all(4),
                                       decoration: BoxDecoration(
@@ -251,7 +271,10 @@ class ReminderItemWidget extends StatelessWidget {
                         // Taken Button
                         Expanded(
                           child: ElevatedButton.icon(
-                            onPressed: onTaken,
+                            onPressed: () {
+                              if (_isThrottled()) return;
+                              widget.onTaken();
+                            },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.statusTaken,
                               foregroundColor: Colors.white,
@@ -279,7 +302,10 @@ class ReminderItemWidget extends StatelessWidget {
                         // Snooze Button
                         Expanded(
                           child: ElevatedButton.icon(
-                            onPressed: onSnooze,
+                            onPressed: () {
+                              if (_isThrottled()) return;
+                              widget.onSnooze();
+                            },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.statusSkipped,
                               foregroundColor: Colors.white,
@@ -306,7 +332,10 @@ class ReminderItemWidget extends StatelessWidget {
 
                         // Skip Button
                         TextButton.icon(
-                          onPressed: onSkip,
+                          onPressed: () {
+                            if (_isThrottled()) return;
+                            widget.onSkip();
+                          },
                           style: TextButton.styleFrom(
                             foregroundColor: isDark
                                 ? AppColors.darkTextSecondary
@@ -360,9 +389,12 @@ class ReminderItemWidget extends StatelessWidget {
                               ),
                             ],
                           ),
-                          if (onUndo != null)
+                          if (widget.onUndo != null)
                             GestureDetector(
-                              onTap: onUndo,
+                              onTap: () {
+                                if (_isThrottled()) return;
+                                widget.onUndo!();
+                              },
                               child: Container(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 10, vertical: 4),
@@ -477,11 +509,12 @@ class ReminderItemWidget extends StatelessWidget {
   }
 
   Widget _buildStatusBadge() {
+    final status = widget.occurrence.status;
     Color bg;
     Color text;
-    String label = occurrence.status.name.toUpperCase();
+    String label = status.name.toUpperCase();
 
-    switch (occurrence.status) {
+    switch (status) {
       case DoseStatusEnum.taken:
         bg = AppColors.statusTakenContainer;
         text = AppColors.statusTakenText;
