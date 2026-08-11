@@ -21,6 +21,9 @@ void main() async {
   runApp(const ProviderScope(child: MedReminderApp()));
 }
 
+// Global notifier to switch bottom nav tabs from any child screen
+final navTabNotifier = ValueNotifier<int>(0);
+
 class MedReminderApp extends ConsumerWidget {
   const MedReminderApp({super.key});
 
@@ -49,11 +52,29 @@ class MainNavigationScreen extends StatefulWidget {
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _currentIndex = 0;
 
-  final List<Widget> _screens = const [
-    DashboardScreen(),
-    HistoryScreen(),
-    MedicineListScreen(),
-    SettingsScreen(),
+  @override
+  void initState() {
+    super.initState();
+    navTabNotifier.addListener(_onTabChange);
+  }
+
+  @override
+  void dispose() {
+    navTabNotifier.removeListener(_onTabChange);
+    super.dispose();
+  }
+
+  void _onTabChange() {
+    setState(() {
+      _currentIndex = navTabNotifier.value;
+    });
+  }
+
+  List<Widget> get _screens => [
+    const DashboardScreen(),
+    const HistoryScreen(),
+    const MedicineListScreen(),
+    const SettingsScreen(),
   ];
 
   @override

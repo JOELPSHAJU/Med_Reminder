@@ -130,11 +130,23 @@ class NotificationService {
     final id = _getNotificationId(occurrenceId);
     final tzScheduledDate = tz.TZDateTime.from(scheduledDateTime, tz.local);
 
-    final String body = foodInstruction != null && foodInstruction.isNotEmpty
-        ? '$doseDetails • $foodInstruction'
-        : doseDetails;
+    // Build rich body text
+    final StringBuffer bodyBuf = StringBuffer(doseDetails);
+    if (foodInstruction != null &&
+        foodInstruction.isNotEmpty &&
+        foodInstruction != 'No instruction') {
+      bodyBuf.write('\n🍽️ $foodInstruction');
+    }
+    final String body = bodyBuf.toString();
 
-    const androidDetails = AndroidNotificationDetails(
+    // Rich expanded text for Android
+    final bigTextStyle = BigTextStyleInformation(
+      body,
+      contentTitle: '💊 $medicineName',
+      summaryText: AppConstants.notificationChannelName,
+    );
+
+    final androidDetails = AndroidNotificationDetails(
       AppConstants.notificationChannelId,
       AppConstants.notificationChannelName,
       channelDescription: AppConstants.notificationChannelDescription,
@@ -143,22 +155,42 @@ class NotificationService {
       showWhen: true,
       enableVibration: true,
       playSound: true,
+      // Rich notification style
+      styleInformation: bigTextStyle,
+      category: AndroidNotificationCategory.reminder,
       // Teal tint matching app theme (#00796B)
-      color: Color(0xFF00796B),
-      ledColor: Color(0xFF00796B),
+      color: const Color(0xFF00796B),
+      ledColor: const Color(0xFF00796B),
       ledOnMs: 1000,
       ledOffMs: 500,
+      // Sub-text showing scheduled time
+      subText: 'Scheduled dose',
+      ticker: 'Time to take $medicineName',
+      // Action buttons
+      actions: <AndroidNotificationAction>[
+        const AndroidNotificationAction(
+          'action_taken',
+          '✅  Mark Taken',
+          showsUserInterface: true,
+        ),
+        const AndroidNotificationAction(
+          'action_snooze',
+          '⏰  Snooze 10 min',
+          showsUserInterface: false,
+        ),
+      ],
     );
 
-    const iosDetails = DarwinNotificationDetails(
+    final iosDetails = DarwinNotificationDetails(
       presentAlert: true,
       presentBadge: true,
       presentSound: true,
-      // Group notifications by medicine name on iOS
+      subtitle: doseDetails,
+      // Group all dose notifications together on iOS
       threadIdentifier: 'med_reminder_doses',
     );
 
-    const notificationDetails = NotificationDetails(
+    final notificationDetails = NotificationDetails(
       android: androidDetails,
       iOS: iosDetails,
     );

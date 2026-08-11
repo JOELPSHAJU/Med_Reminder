@@ -9,6 +9,7 @@ import 'package:med_reminder/features/dashboard/presentation/widgets/snooze_moda
 import 'package:med_reminder/features/dashboard/presentation/widgets/stats_card_widget.dart';
 import 'package:med_reminder/features/medicine_core/data/models/dose_status_enum.dart';
 import 'package:med_reminder/features/settings/presentation/providers/settings_provider.dart';
+import 'package:med_reminder/main.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -143,21 +144,60 @@ class DashboardScreen extends ConsumerWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'Today Reminders',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Today Reminders',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        '${todayReminders.length} dose${todayReminders.length == 1 ? '' : 's'} scheduled',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 12,
+                          color: isDark
+                              ? AppColors.darkTextSecondary
+                              : AppColors.lightTextSecondary,
+                        ),
+                      ),
+                    ],
                   ),
-                  Text(
-                    '${todayReminders.length} Doses',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.primary,
+                  if (todayReminders.length > 5)
+                    GestureDetector(
+                      onTap: () {
+                        // Switch to History tab via global notifier
+                        navTabNotifier.value = 1;
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryContainer,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Row(
+                          children: [
+                            Text(
+                              'See All',
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.primaryDark,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            const Icon(
+                              Icons.arrow_forward_rounded,
+                              size: 14,
+                              color: AppColors.primaryDark,
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
                 ],
               ),
               const SizedBox(height: 12),
@@ -207,7 +247,7 @@ class DashboardScreen extends ConsumerWidget {
                 ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  itemCount: todayReminders.length,
+                  itemCount: todayReminders.length > 5 ? 5 : todayReminders.length,
                   itemBuilder: (context, index) {
                     final occ = todayReminders[index];
                     return ReminderItemWidget(
