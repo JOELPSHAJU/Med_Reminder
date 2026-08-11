@@ -21,6 +21,9 @@ class MainActivity : FlutterActivity() {
                 if (call.method == "requestBatteryOptimization") {
                     requestBatteryOptimizationExemption()
                     result.success(null)
+                } else if (call.method == "requestAutostart") {
+                    requestAutostartPermission()
+                    result.success(null)
                 } else {
                     result.notImplemented()
                 }
@@ -39,6 +42,23 @@ class MainActivity : FlutterActivity() {
                     data = Uri.parse("package:$packageName")
                 }
                 startActivity(intent)
+            }
+        }
+    }
+
+    private fun requestAutostartPermission() {
+        val manufacturer = Build.MANUFACTURER.lowercase()
+        if (manufacturer.contains("xiaomi") || manufacturer.contains("redmi") || manufacturer.contains("poco")) {
+            try {
+                val intent = Intent().apply {
+                    component = android.content.ComponentName(
+                        "com.miui.securitycenter",
+                        "com.miui.permcenter.autostart.AutoStartManagementActivity"
+                    )
+                }
+                startActivity(intent)
+            } catch (_: Exception) {
+                // Safe fallback if activity not found
             }
         }
     }

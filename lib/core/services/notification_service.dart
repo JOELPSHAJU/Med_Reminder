@@ -84,9 +84,9 @@ class NotificationService {
     if (androidImplementation != null) {
       await androidImplementation.requestNotificationsPermission();
       await androidImplementation.requestExactAlarmsPermission();
-      // Request battery optimization exemption so alarms survive
-      // aggressive OEM power management (MIUI, OneUI, ColorOS, etc.)
+      // Request battery optimization exemption and Xiaomi autostart permission
       await _requestBatteryOptimizationExemption();
+      await _requestAutostartPermission();
     }
 
     final iosImplementation =
@@ -102,17 +102,21 @@ class NotificationService {
   }
 
   /// Requests the user to disable battery optimization for this app.
-  /// This ensures AlarmManager exact alarms fire even when the app is
-  /// force-stopped or the device is in Doze mode on OEM Android devices.
   Future<void> _requestBatteryOptimizationExemption() async {
     try {
       const platform = MethodChannel('med_reminder/battery');
       await platform.invokeMethod('requestBatteryOptimization');
     } on PlatformException {
-      // Not supported on this device/version — safe to ignore
-    } catch (_) {
-      // Fallback: ignore silently
-    }
+    } catch (_) {}
+  }
+
+  /// Requests Autostart manager screen on Xiaomi/Redmi devices.
+  Future<void> _requestAutostartPermission() async {
+    try {
+      const platform = MethodChannel('med_reminder/battery');
+      await platform.invokeMethod('requestAutostart');
+    } on PlatformException {
+    } catch (_) {}
   }
 
   int _getNotificationId(String occurrenceId) {
@@ -134,7 +138,17 @@ class NotificationService {
     if (scheduledDateTime.isBefore(now)) return;
 
     final id = _getNotificationId(occurrenceId);
-    final tzScheduledDate = tz.TZDateTime.from(scheduledDateTime, tz.local);
+
+    // Build wall-clock exact TZDateTime to prevent UTC/DST hour offset shifts
+    final tzScheduledDate = tz.TZDateTime(
+      tz.local,
+      scheduledDateTime.year,
+      scheduledDateTime.month,
+      scheduledDateTime.day,
+      scheduledDateTime.hour,
+      scheduledDateTime.minute,
+      scheduledDateTime.second,
+    );
 
     // Build rich body text
     final StringBuffer bodyBuf = StringBuffer(doseDetails);
@@ -163,7 +177,7 @@ class NotificationService {
       playSound: true,
       // Rich notification style
       styleInformation: bigTextStyle,
-      category: AndroidNotificationCategory.reminder,
+      category: AndroidNotificationCategory.alarm,
       // Teal tint matching app theme (#00796B)
       color: const Color(0xFF00796B),
       ledColor: const Color(0xFF00796B),
@@ -201,17 +215,34 @@ class NotificationService {
       iOS: iosDetails,
     );
 
-    await _notificationsPlugin.zonedSchedule(
-      id,
-      '💊 Time to take $medicineName',
-      body,
-      tzScheduledDate,
-      notificationDetails,
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
-      payload: occurrenceId,
-    );
+    try {
+      // AlarmClock mode acts as a native system alarm clock on Android,
+      // waking up CPU even in deep Doze mode when app is killed/closed
+      await _notificationsPlugin.zonedSchedule(
+        id,
+        '💊 Time to take $medicineName',
+        body,
+        tzScheduledDate,
+        notificationDetails,
+        androidScheduleMode: AndroidScheduleMode.alarmClock,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
+        payload: occurrenceId,
+      );
+    } catch (_) {
+      // Fallback if system alarm clock mode is not permitted by OS
+      await _notificationsPlugin.zonedSchedule(
+        id,
+        '💊 Time to take $medicineName',
+        body,
+        tzScheduledDate,
+        notificationDetails,
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
+        payload: occurrenceId,
+      );
+    }
   }
 
   Future<void> cancelNotification(String occurrenceId) async {
