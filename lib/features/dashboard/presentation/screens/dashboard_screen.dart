@@ -211,7 +211,7 @@ class DashboardScreen extends ConsumerWidget {
               if (upcomingReminders.isEmpty)
                 Center(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 40),
+                    padding: const EdgeInsets.symmetric(vertical: 36, horizontal: 16),
                     child: Column(
                       children: [
                         Container(
@@ -220,9 +220,11 @@ class DashboardScreen extends ConsumerWidget {
                             color: AppColors.primary.withValues(alpha: 0.1),
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(
-                            Icons.check_circle_rounded,
-                            size: 56,
+                          child: Icon(
+                            todayReminders.isEmpty
+                                ? Icons.medication_outlined
+                                : Icons.check_circle_rounded,
+                            size: 52,
                             color: AppColors.primary,
                           ),
                         ),
@@ -230,24 +232,70 @@ class DashboardScreen extends ConsumerWidget {
                         Text(
                           todayReminders.isEmpty
                               ? 'No Doses Scheduled'
-                              : 'All Caught Up! 🎉',
+                              : 'No Doses Remaining Today 🎉',
                           style: GoogleFonts.plusJakartaSans(
                             fontSize: 17,
                             fontWeight: FontWeight.bold,
                           ),
+                          textAlign: TextAlign.center,
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 6),
                         Text(
                           todayReminders.isEmpty
                               ? 'Tap + below to schedule a new medicine.'
-                              : 'All doses for today are completed.',
+                              : 'No upcoming doses scheduled after current time.',
                           style: GoogleFonts.plusJakartaSans(
                             color: isDark
                                 ? AppColors.darkTextSecondary
                                 : AppColors.lightTextSecondary,
                             fontSize: 13,
                           ),
+                          textAlign: TextAlign.center,
                         ),
+                        if (todayReminders.isNotEmpty) ...[
+                          const SizedBox(height: 16),
+                          // Today's Skipped & Missed Summary Badges
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 14, vertical: 10),
+                            decoration: BoxDecoration(
+                              color: isDark
+                                  ? AppColors.darkSurface
+                                  : AppColors.lightSurface,
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: isDark
+                                    ? AppColors.darkBorder
+                                    : AppColors.lightBorder,
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                _buildSummaryChip(
+                                  label: 'Skipped',
+                                  count: stats.skippedCount,
+                                  color: AppColors.statusSkippedText,
+                                  bg: AppColors.statusSkippedContainer,
+                                ),
+                                const SizedBox(width: 8),
+                                _buildSummaryChip(
+                                  label: 'Missed',
+                                  count: stats.missedCount,
+                                  color: AppColors.statusMissedText,
+                                  bg: AppColors.statusMissedContainer,
+                                ),
+                                const SizedBox(width: 8),
+                                _buildSummaryChip(
+                                  label: 'Taken',
+                                  count: stats.takenCount,
+                                  color: AppColors.statusTakenText,
+                                  bg: AppColors.statusTakenContainer,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                   ),
@@ -419,10 +467,49 @@ class DashboardScreen extends ConsumerWidget {
                     );
                   },
                 ),
+
             ],
           ),
         ),
       ),
     );
   }
+
+
+  Widget _buildSummaryChip({
+    required String label,
+    required int count,
+    required Color color,
+    required Color bg,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            '$label: ',
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: color,
+            ),
+          ),
+          Text(
+            '$count',
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
+
