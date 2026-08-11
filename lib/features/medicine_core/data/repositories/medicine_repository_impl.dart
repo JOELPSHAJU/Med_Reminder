@@ -30,12 +30,32 @@ class MedicineRepositoryImpl implements MedicineRepository {
 
   @override
   Future<void> saveMedicine(MedicineModel medicine) async {
+    // 1. Cancel and purge old future pending occurrences for this medicine if editing
+    final now = DateTime.now();
+    final existingAll = _localDataSource.getAllOccurrences();
+    final toRemove = <String>[];
+
+    for (final occ in existingAll) {
+      if (occ.medicineId == medicine.id &&
+          occ.status == DoseStatusEnum.pending &&
+          occ.scheduledDateTime.isAfter(now)) {
+        await _notificationService.cancelNotification(occ.id);
+        toRemove.add(occ.id);
+      }
+    }
+
+    if (toRemove.isNotEmpty) {
+      final updatedList = existingAll.where((occ) => !toRemove.contains(occ.id)).toList();
+      await _localDataSource.saveOccurrences(updatedList);
+    }
+
+    // 2. Save updated medicine details
     await _localDataSource.saveMedicine(medicine);
 
-    // De-duplicate any existing entries first
+    // 3. De-duplicate existing entries
     await _cleanDuplicateOccurrences();
 
-    // Generate occurrences
+    // 4. Generate fresh future occurrences with updated snapshots & schedule alarms
     final existing = _localDataSource.getAllOccurrences();
     final newOccurrences = GenerateOccurrencesUseCase.generateForMedicine(
       medicine: medicine,

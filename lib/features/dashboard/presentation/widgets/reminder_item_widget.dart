@@ -12,6 +12,8 @@ class ReminderItemWidget extends StatelessWidget {
   final VoidCallback onSkip;
   final VoidCallback? onUndo;
 
+  final VoidCallback? onEdit;
+
   const ReminderItemWidget({
     super.key,
     required this.occurrence,
@@ -19,6 +21,7 @@ class ReminderItemWidget extends StatelessWidget {
     required this.onSnooze,
     required this.onSkip,
     this.onUndo,
+    this.onEdit,
   });
 
   IconData _getIconForType(String type) {
@@ -113,6 +116,28 @@ class ReminderItemWidget extends StatelessWidget {
                                 ),
                                 const SizedBox(width: 6),
                                 _buildStatusBadge(),
+                                if (onEdit != null) ...[
+                                  const SizedBox(width: 4),
+                                  GestureDetector(
+                                    onTap: onEdit,
+                                    child: Container(
+                                      padding: const EdgeInsets.all(4),
+                                      decoration: BoxDecoration(
+                                        color: isDark
+                                            ? Colors.white.withValues(alpha: 0.1)
+                                            : Colors.black.withValues(alpha: 0.05),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Icon(
+                                        Icons.edit_outlined,
+                                        size: 14,
+                                        color: isDark
+                                            ? AppColors.darkTextSecondary
+                                            : AppColors.lightTextSecondary,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ],
                             ),
                             Text(

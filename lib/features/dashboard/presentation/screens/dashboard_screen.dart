@@ -8,6 +8,8 @@ import 'package:med_reminder/features/dashboard/presentation/widgets/reminder_it
 import 'package:med_reminder/features/dashboard/presentation/widgets/snooze_modal_dialog.dart';
 import 'package:med_reminder/features/dashboard/presentation/widgets/stats_card_widget.dart';
 import 'package:med_reminder/features/history/presentation/screens/history_screen.dart';
+import 'package:med_reminder/features/add_edit_medicine/presentation/screens/add_edit_medicine_screen.dart';
+import 'package:med_reminder/features/medicine_core/data/models/medicine_model.dart';
 import 'package:med_reminder/features/medicine_core/data/models/dose_status_enum.dart';
 import 'package:med_reminder/features/settings/presentation/providers/settings_provider.dart';
 
@@ -463,6 +465,29 @@ class DashboardScreen extends ConsumerWidget {
                               occ.id,
                               DoseStatusEnum.pending,
                             );
+                      },
+                      onEdit: () {
+                        final allMeds = ref.read(allMedicinesProvider);
+                        final med = allMeds.firstWhere(
+                          (m) => m.id == occ.medicineId,
+                          orElse: () => MedicineModel(
+                            id: occ.medicineId,
+                            name: occ.medicineNameSnapshot,
+                            description: '',
+                            type: occ.medicineTypeSnapshot,
+                            strength: occ.medicineStrengthSnapshot,
+                            startDate: occ.scheduledDateTime,
+                            isOngoing: true,
+                            createdAt: DateTime.now(),
+                            doses: [],
+                          ),
+                        );
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                AddEditMedicineScreen(existingMedicine: med),
+                          ),
+                        );
                       },
                     );
                   },
