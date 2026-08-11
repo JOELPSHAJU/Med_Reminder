@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'package:med_reminder/core/services/notification_service.dart';
+// import 'package:med_reminder/core/services/notification_service.dart';
 import 'package:med_reminder/core/theme/app_colors.dart';
 import 'package:med_reminder/features/settings/presentation/providers/settings_provider.dart';
 
@@ -137,6 +137,7 @@ class SettingsScreen extends ConsumerWidget {
                     },
                   ),
                 ),
+                /*
                 const Divider(height: 1),
                 ListTile(
                   leading: const Icon(Icons.notifications_active_rounded, color: AppColors.primary),
@@ -179,6 +180,7 @@ class SettingsScreen extends ConsumerWidget {
                     }
                   },
                 ),
+                */
               ],
             ),
           ),
