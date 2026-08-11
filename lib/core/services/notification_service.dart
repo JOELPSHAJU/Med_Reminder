@@ -272,9 +272,64 @@ class NotificationService {
 
     await _notificationsPlugin.show(
       99999,
-      '💊 Med Reminder',
-      'Notifications are configured and working properly!',
+      '💊 Med Reminder Test',
+      'Instant test notification working!',
       details,
     );
   }
+
+  Future<void> scheduleTestNotification({int delaySeconds = 10}) async {
+    final scheduledDateTime = DateTime.now().add(Duration(seconds: delaySeconds));
+    final id = 99998;
+    final tzScheduledDate = tz.TZDateTime(
+      tz.local,
+      scheduledDateTime.year,
+      scheduledDateTime.month,
+      scheduledDateTime.day,
+      scheduledDateTime.hour,
+      scheduledDateTime.minute,
+      scheduledDateTime.second,
+    );
+
+    const androidDetails = AndroidNotificationDetails(
+      AppConstants.notificationChannelId,
+      AppConstants.notificationChannelName,
+      channelDescription: AppConstants.notificationChannelDescription,
+      importance: Importance.max,
+      priority: Priority.high,
+      color: Color(0xFF00796B),
+      category: AndroidNotificationCategory.alarm,
+    );
+    const iosDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+    );
+    const details = NotificationDetails(android: androidDetails, iOS: iosDetails);
+
+    try {
+      await _notificationsPlugin.zonedSchedule(
+        id,
+        '⏰ Test Background Alarm (10s)',
+        'The alarm fired successfully while the app was closed!',
+        tzScheduledDate,
+        details,
+        androidScheduleMode: AndroidScheduleMode.alarmClock,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
+      );
+    } catch (_) {
+      await _notificationsPlugin.zonedSchedule(
+        id,
+        '⏰ Test Background Alarm (10s)',
+        'The alarm fired successfully while the app was closed!',
+        tzScheduledDate,
+        details,
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
+      );
+    }
+  }
 }
+

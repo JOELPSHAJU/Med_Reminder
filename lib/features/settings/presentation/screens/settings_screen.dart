@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'package:med_reminder/core/services/notification_service.dart';
 import 'package:med_reminder/core/theme/app_colors.dart';
 import 'package:med_reminder/features/settings/presentation/providers/settings_provider.dart';
 
@@ -135,6 +136,48 @@ class SettingsScreen extends ConsumerWidget {
                       if (val != null) settingsNotifier.updateSoundTheme(val);
                     },
                   ),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.notifications_active_rounded, color: AppColors.primary),
+                  title: Text(
+                    'Instant Test Notification',
+                    style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600),
+                  ),
+                  subtitle: const Text('Sends an immediate test alert'),
+                  trailing: const Icon(Icons.send_rounded, size: 18),
+                  onTap: () async {
+                    await NotificationService().showTestNotification();
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Test notification sent! Check your notification bar.'),
+                          duration: Duration(seconds: 3),
+                        ),
+                      );
+                    }
+                  },
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.timer_outlined, color: Colors.orange),
+                  title: Text(
+                    'Test Background Alarm (10s)',
+                    style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600),
+                  ),
+                  subtitle: const Text('Schedules alarm in 10s. Close/lock app now to test!'),
+                  trailing: const Icon(Icons.alarm_add_rounded, size: 18),
+                  onTap: () async {
+                    await NotificationService().scheduleTestNotification(delaySeconds: 10);
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('⏰ Alarm set for 10s from now! Close the app or lock screen now.'),
+                          duration: Duration(seconds: 5),
+                        ),
+                      );
+                    }
+                  },
                 ),
               ],
             ),
