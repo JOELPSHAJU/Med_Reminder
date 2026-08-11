@@ -12,7 +12,8 @@ class CheckMissedOccurrencesUseCase {
 
     for (final occ in occurrences) {
       if (occ.status == DoseStatusEnum.pending) {
-        final graceTime = occ.scheduledDateTime.add(
+        final targetTime = occ.snoozedUntil ?? occ.scheduledDateTime;
+        final graceTime = targetTime.add(
           const Duration(minutes: AppConstants.missedGracePeriodMinutes),
         );
         if (now.isAfter(graceTime)) {

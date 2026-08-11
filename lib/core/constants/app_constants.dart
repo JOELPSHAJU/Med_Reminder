@@ -14,5 +14,5 @@ class AppConstants {
   static const int ongoingExtendThresholdDays = 15;
 
   // Grace period before pending doses auto-transition to missed (in minutes)
-  static const int missedGracePeriodMinutes = 60;
+  static const int missedGracePeriodMinutes = 10;
 }

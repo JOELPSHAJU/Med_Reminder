@@ -5,6 +5,7 @@ import 'package:med_reminder/features/medicine_core/data/models/dose_status_enum
 import 'package:med_reminder/features/medicine_core/data/models/medicine_model.dart';
 import 'package:med_reminder/features/medicine_core/data/repositories/medicine_repository_impl.dart';
 import 'package:med_reminder/features/medicine_core/domain/repositories/medicine_repository.dart';
+import 'package:med_reminder/features/medicine_core/domain/usecases/check_missed_occurrences_usecase.dart';
 
 final medicineRepositoryProvider = Provider<MedicineRepository>((ref) {
   return MedicineRepositoryImpl();
@@ -125,7 +126,8 @@ final filteredMedicinesProvider = Provider<List<MedicineModel>>((ref) {
 final allOccurrencesProvider = Provider<List<DoseOccurrenceModel>>((ref) {
   ref.watch(medicineStateNotifierProvider);
   final repo = ref.watch(medicineRepositoryProvider);
-  return repo.getAllOccurrences();
+  final occurrences = repo.getAllOccurrences();
+  return CheckMissedOccurrencesUseCase.evaluateMissedOccurrences(occurrences);
 });
 
 final selectedDashboardDateProvider = StateProvider<DateTime>((ref) {
