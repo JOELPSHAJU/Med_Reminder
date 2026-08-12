@@ -14,7 +14,7 @@ if (keyPropertiesFile.exists()) {
 
 android {
     namespace = "com.example.med_reminder"
-    compileSdk = 35
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
