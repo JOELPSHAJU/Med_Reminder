@@ -1,5 +1,8 @@
+import 'package:alarm/alarm.dart';
+import 'package:alarm/utils/alarm_set.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'core/services/alarm_service.dart';
 import 'core/services/hive_service.dart';
 import 'core/services/notification_service.dart';
 import 'core/theme/app_theme.dart';
@@ -20,6 +23,10 @@ void main() async {
   GoogleFonts.config.allowRuntimeFetching = false;
 
   await HiveService.init();
+
+  // Initialize the alarm package (foreground media service for dose alarms)
+  await Alarm.init();
+
   await NotificationService().init();
   await NotificationService().requestPermissions();
 
@@ -57,14 +64,29 @@ class MainNavigationScreen extends StatefulWidget {
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _currentIndex = 0;
 
+  // Listen to alarm ring events so we navigate the user to the Dashboard
+  // when an alarm fires (works even when app is in background)
+  late final _alarmSubscription = AlarmService()
+      .ringStream
+      .listen((AlarmSet alarmSet) {
+        if (mounted && alarmSet.alarms.isNotEmpty) {
+          // Switch to Dashboard tab (index 0) so user can act on the dose
+          setState(() => _currentIndex = 0);
+          navTabNotifier.value = 0;
+        }
+      });
+
   @override
   void initState() {
     super.initState();
     navTabNotifier.addListener(_onTabChange);
+    // Start listening to alarm ring events
+    _alarmSubscription;
   }
 
   @override
   void dispose() {
+    _alarmSubscription.cancel();
     navTabNotifier.removeListener(_onTabChange);
     super.dispose();
   }

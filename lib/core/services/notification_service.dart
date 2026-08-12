@@ -3,6 +3,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import '../constants/app_constants.dart';
+import 'alarm_service.dart';
 
 /// Top-level handler required for background notification taps (Android).
 /// Must be a top-level function (not a class method).
@@ -215,9 +216,20 @@ class NotificationService {
       iOS: iosDetails,
     );
 
+    // PRIMARY: Schedule a real device alarm via alarm package
+    // This fires a foreground media service with ringtone + vibration +
+    // full-screen intent — works even when app is killed on MIUI/HyperOS.
+    await AlarmService().scheduleAlarm(
+      occurrenceId: occurrenceId,
+      medicineName: medicineName,
+      doseDetails: doseDetails,
+      scheduledDateTime: scheduledDateTime,
+      foodInstruction: foodInstruction,
+    );
+
+    // BACKUP: Also schedule a standard notification so the user sees it
+    // even if they dismiss the full-screen alarm quickly.
     try {
-      // AlarmClock mode acts as a native system alarm clock on Android,
-      // waking up CPU even in deep Doze mode when app is killed/closed
       await _notificationsPlugin.zonedSchedule(
         id,
         '💊 Time to take $medicineName',
@@ -230,27 +242,31 @@ class NotificationService {
         payload: occurrenceId,
       );
     } catch (_) {
-      // Fallback if system alarm clock mode is not permitted by OS
-      await _notificationsPlugin.zonedSchedule(
-        id,
-        '💊 Time to take $medicineName',
-        body,
-        tzScheduledDate,
-        notificationDetails,
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-        uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime,
-        payload: occurrenceId,
-      );
+      try {
+        await _notificationsPlugin.zonedSchedule(
+          id,
+          '💊 Time to take $medicineName',
+          body,
+          tzScheduledDate,
+          notificationDetails,
+          androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+          uiLocalNotificationDateInterpretation:
+              UILocalNotificationDateInterpretation.absoluteTime,
+          payload: occurrenceId,
+        );
+      } catch (_) {}
     }
   }
 
   Future<void> cancelNotification(String occurrenceId) async {
+    // Cancel both the alarm (ringtone) and the backup notification
+    await AlarmService().cancelAlarm(occurrenceId);
     final id = _getNotificationId(occurrenceId);
     await _notificationsPlugin.cancel(id);
   }
 
   Future<void> cancelAllNotifications() async {
+    await AlarmService().cancelAllAlarms();
     await _notificationsPlugin.cancelAll();
   }
 
