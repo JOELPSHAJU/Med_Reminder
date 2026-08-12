@@ -19,12 +19,10 @@ import 'package:google_fonts/google_fonts.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Disable runtime HTTP fetching so app runs smoothly offline without SocketExceptions
   GoogleFonts.config.allowRuntimeFetching = false;
 
   await HiveService.init();
 
-  // Initialize the alarm package (foreground media service for dose alarms)
   await Alarm.init();
 
   await NotificationService().init();
@@ -33,7 +31,6 @@ void main() async {
   runApp(const ProviderScope(child: MedReminderApp()));
 }
 
-// Global notifier to switch bottom nav tabs from any child screen
 final navTabNotifier = ValueNotifier<int>(0);
 
 class MedReminderApp extends ConsumerWidget {
@@ -64,13 +61,10 @@ class MainNavigationScreen extends StatefulWidget {
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _currentIndex = 0;
 
-  // Listen to alarm ring events so we navigate the user to the Dashboard
-  // when an alarm fires (works even when app is in background)
   late final _alarmSubscription = AlarmService().ringStream.listen((
     AlarmSet alarmSet,
   ) {
     if (mounted && alarmSet.alarms.isNotEmpty) {
-      // Switch to Dashboard tab (index 0) so user can act on the dose
       setState(() => _currentIndex = 0);
       navTabNotifier.value = 0;
     }
@@ -80,7 +74,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   void initState() {
     super.initState();
     navTabNotifier.addListener(_onTabChange);
-    // Start listening to alarm ring events
     _alarmSubscription;
   }
 

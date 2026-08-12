@@ -178,12 +178,10 @@ class MedicineRepositoryImpl implements MedicineRepository {
 
   @override
   Future<void> checkAndSyncOccurrences() async {
-    // 0. Clean duplicate occurrences if any exist from prior runs
     await _cleanDuplicateOccurrences();
 
     final allOccurrences = _localDataSource.getAllOccurrences();
 
-    // 1. Auto-transition past pending occurrences to missed
     final evaluated = CheckMissedOccurrencesUseCase.evaluateMissedOccurrences(
       allOccurrences,
     );
@@ -198,7 +196,6 @@ class MedicineRepositoryImpl implements MedicineRepository {
       }
     }
 
-    // 2. Extend rolling generation for ongoing active medicines
     final medicines = _localDataSource.getAllMedicines();
     final activeMedIds = medicines
         .where((m) => m.isActive)
@@ -219,11 +216,6 @@ class MedicineRepositoryImpl implements MedicineRepository {
       }
     }
 
-    // 3. Schedule alarms ONLY for pending occurrences in the next 7 days.
-    //    Occurrences for days 8-30 still exist in Hive for history/display
-    //    but we don't arm system alarms for them yet (re-armed on next sync).
-    //    Running via Future.microtask pushes this off the current frame,
-    //    preventing UI jank / skipped frames on startup.
     final currentOccurrences = _localDataSource.getAllOccurrences();
     final now = DateTime.now();
     final alarmCutoff = now.add(
@@ -235,7 +227,6 @@ class MedicineRepositoryImpl implements MedicineRepository {
         if (activeMedIds.contains(occ.medicineId) &&
             occ.status == DoseStatusEnum.pending) {
           final targetTime = occ.snoozedUntil ?? occ.scheduledDateTime;
-          // Only arm alarms within the next 7-day window
           if (targetTime.isAfter(now) && targetTime.isBefore(alarmCutoff)) {
             await _notificationService.scheduleDoseNotification(
               occurrenceId: occ.id,
