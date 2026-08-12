@@ -13,7 +13,7 @@
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
     <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
 
-    <!-- alarm package required permissions -->
+    <!-- alarm package required permissions (foreground media service + full-screen intent) -->
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
@@ -34,25 +34,9 @@
             </intent-filter>
         </receiver>
 
-        <!-- alarm package: Foreground media service for alarm playback -->
-        <service
-            android:name="com.gdelataillade.alarm.alarm.AlarmService"
-            android:exported="false"
-            android:foregroundServiceType="mediaPlayback"/>
-
-        <!-- alarm package: Alarm broadcast receiver -->
-        <receiver
-            android:name="com.gdelataillade.alarm.alarm.AlarmReceiver"
-            android:exported="false"/>
-
-        <!-- alarm package: Boot receiver to reschedule alarms after device reboot -->
-        <receiver
-            android:name="com.gdelataillade.alarm.alarm.RebootBroadcastReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
-            </intent-filter>
-        </receiver>
+        <!-- NOTE: alarm package components (AlarmService, AlarmReceiver, RebootBroadcastReceiver)
+             are auto-merged from the plugin's own AndroidManifest.xml by Gradle.
+             Do NOT declare them here to avoid manifest merger conflicts. -->
 
         <activity
             android:name=".MainActivity"
