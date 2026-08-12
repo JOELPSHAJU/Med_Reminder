@@ -4,6 +4,7 @@ import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import '../constants/app_constants.dart';
 import 'alarm_service.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 /// Top-level handler required for background notification taps (Android).
 /// Must be a top-level function (not a class method).
@@ -85,9 +86,15 @@ class NotificationService {
     if (androidImplementation != null) {
       await androidImplementation.requestNotificationsPermission();
       await androidImplementation.requestExactAlarmsPermission();
-      // Request battery optimization exemption and Xiaomi autostart permission
-      await _requestBatteryOptimizationExemption();
-      await _requestAutostartPermission();
+      // Request battery optimization exemption and Xiaomi autostart permission ONLY ONCE
+      final box = await Hive.openBox('app_flags');
+      final hasRequestedBackground = box.get('hasRequestedBackground', defaultValue: false);
+      
+      if (!hasRequestedBackground) {
+        await _requestBatteryOptimizationExemption();
+        await _requestAutostartPermission();
+        await box.put('hasRequestedBackground', true);
+      }
     }
 
     final iosImplementation =

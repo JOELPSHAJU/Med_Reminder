@@ -16,8 +16,6 @@ class AlarmService {
   factory AlarmService() => _instance;
   AlarmService._internal();
 
-  static const String _audioAssetPath = 'assets/audio/alarm.mp3';
-
   /// Converts an occurrenceId string to a stable int id for the alarm package.
   /// Must return a value in the range 1..2147483647 (positive int32).
   int _getAlarmId(String occurrenceId) {
@@ -56,7 +54,7 @@ class AlarmService {
     final alarmSettings = AlarmSettings(
       id: id,
       dateTime: scheduledDateTime,
-      assetAudioPath: _audioAssetPath,
+      assetAudioPath: null, // Use system default alarm sound
       loopAudio: true,
       vibrate: true,
       // Wake screen and show full-screen alarm intent
