@@ -15,4 +15,8 @@ class AppConstants {
 
   // Grace period before pending doses auto-transition to missed (in minutes)
   static const int missedGracePeriodMinutes = 10;
+
+  // How many days ahead to arm system alarms (keeps alarm count low for performance).
+  // Occurrences are still generated for 30 days; only alarms for the next 7 are scheduled.
+  static const int alarmScheduleWindowDays = 7;
 }

@@ -1,3 +1,4 @@
+import 'package:med_reminder/core/constants/app_constants.dart';
 import 'package:med_reminder/core/services/hive_service.dart';
 import 'package:med_reminder/core/services/notification_service.dart';
 import 'package:med_reminder/features/medicine_core/data/datasources/medicine_local_datasource.dart';
@@ -216,26 +217,36 @@ class MedicineRepositoryImpl implements MedicineRepository {
       }
     }
 
-    // 3. Ensure ALL pending occurrences for ACTIVE medicines have alarms scheduled
+    // 3. Schedule alarms ONLY for pending occurrences in the next 7 days.
+    //    Occurrences for days 8-30 still exist in Hive for history/display
+    //    but we don't arm system alarms for them yet (re-armed on next sync).
+    //    Running via Future.microtask pushes this off the current frame,
+    //    preventing UI jank / skipped frames on startup.
     final currentOccurrences = _localDataSource.getAllOccurrences();
     final now = DateTime.now();
+    final alarmCutoff = now.add(
+      const Duration(days: AppConstants.alarmScheduleWindowDays),
+    );
 
-    for (final occ in currentOccurrences) {
-      if (activeMedIds.contains(occ.medicineId) &&
-          occ.status == DoseStatusEnum.pending) {
-        final targetTime = occ.snoozedUntil ?? occ.scheduledDateTime;
-        if (targetTime.isAfter(now)) {
-          await _notificationService.scheduleDoseNotification(
-            occurrenceId: occ.id,
-            medicineName: occ.medicineNameSnapshot,
-            doseDetails:
-                '${occ.doseQuantitySnapshot} ${occ.doseUnitSnapshot}',
-            scheduledDateTime: targetTime,
-            foodInstruction: occ.foodInstructionSnapshot,
-          );
+    Future.microtask(() async {
+      for (final occ in currentOccurrences) {
+        if (activeMedIds.contains(occ.medicineId) &&
+            occ.status == DoseStatusEnum.pending) {
+          final targetTime = occ.snoozedUntil ?? occ.scheduledDateTime;
+          // Only arm alarms within the next 7-day window
+          if (targetTime.isAfter(now) && targetTime.isBefore(alarmCutoff)) {
+            await _notificationService.scheduleDoseNotification(
+              occurrenceId: occ.id,
+              medicineName: occ.medicineNameSnapshot,
+              doseDetails:
+                  '${occ.doseQuantitySnapshot} ${occ.doseUnitSnapshot}',
+              scheduledDateTime: targetTime,
+              foodInstruction: occ.foodInstructionSnapshot,
+            );
+          }
         }
       }
-    }
+    });
   }
 
   Future<void> _cleanDuplicateOccurrences() async {
