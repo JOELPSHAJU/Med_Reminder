@@ -45,6 +45,6 @@ class SettingsNotifier extends StateNotifier<AppSettingsModel> {
 
 final settingsProvider =
     StateNotifierProvider<SettingsNotifier, AppSettingsModel>((ref) {
-  final repo = ref.watch(settingsRepositoryProvider);
-  return SettingsNotifier(repo);
-});
+      final repo = ref.watch(settingsRepositoryProvider);
+      return SettingsNotifier(repo);
+    });

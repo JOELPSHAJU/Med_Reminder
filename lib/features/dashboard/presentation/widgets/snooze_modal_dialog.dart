@@ -30,10 +30,7 @@ class SnoozeModalDialog extends StatelessWidget {
             children: [
               const Text(
                 'Snooze Reminder',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               IconButton(
                 onPressed: () => Navigator.of(context).pop(),
@@ -45,7 +42,9 @@ class SnoozeModalDialog extends StatelessWidget {
           Text(
             'Select how long you want to snooze this dose reminder.',
             style: TextStyle(
-              color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+              color: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.color?.withOpacity(0.7),
             ),
           ),
           const SizedBox(height: 20),
@@ -61,8 +60,10 @@ class SnoozeModalDialog extends StatelessWidget {
                 },
                 borderRadius: BorderRadius.circular(16),
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 14,
+                  ),
                   decoration: BoxDecoration(
                     color: isDefault
                         ? AppColors.primary

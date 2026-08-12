@@ -19,8 +19,7 @@ class AddEditMedicineScreen extends ConsumerStatefulWidget {
       _AddEditMedicineScreenState();
 }
 
-class _AddEditMedicineScreenState
-    extends ConsumerState<AddEditMedicineScreen> {
+class _AddEditMedicineScreenState extends ConsumerState<AddEditMedicineScreen> {
   final _formKey = GlobalKey<FormState>();
 
   late TextEditingController _nameController;
@@ -270,15 +269,15 @@ class _AddEditMedicineScreenState
                           color: isSelected
                               ? AppColors.primary
                               : (isDark
-                                  ? AppColors.darkBorder
-                                  : AppColors.lightBorder),
+                                    ? AppColors.darkBorder
+                                    : AppColors.lightBorder),
                         ),
                         labelStyle: GoogleFonts.plusJakartaSans(
                           color: isSelected
                               ? AppColors.primaryDark
                               : (isDark
-                                  ? AppColors.darkTextPrimary
-                                  : AppColors.lightTextPrimary),
+                                    ? AppColors.darkTextPrimary
+                                    : AppColors.lightTextPrimary),
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
                         ),
@@ -330,7 +329,9 @@ class _AddEditMedicineScreenState
                   color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+                    color: isDark
+                        ? AppColors.darkBorder
+                        : AppColors.lightBorder,
                   ),
                 ),
                 child: Column(
@@ -353,8 +354,9 @@ class _AddEditMedicineScreenState
                         setState(() {
                           _isOngoing = val;
                           if (!_isOngoing && _endDate == null) {
-                            _endDate =
-                                DateTime.now().add(const Duration(days: 7));
+                            _endDate = DateTime.now().add(
+                              const Duration(days: 7),
+                            );
                           }
                         });
                       },
@@ -368,10 +370,12 @@ class _AddEditMedicineScreenState
                               final picked = await showDatePicker(
                                 context: context,
                                 initialDate: _startDate,
-                                firstDate: DateTime.now()
-                                    .subtract(const Duration(days: 30)),
-                                lastDate: DateTime.now()
-                                    .add(const Duration(days: 365)),
+                                firstDate: DateTime.now().subtract(
+                                  const Duration(days: 30),
+                                ),
+                                lastDate: DateTime.now().add(
+                                  const Duration(days: 365),
+                                ),
                               );
                               if (picked != null) {
                                 setState(() => _startDate = picked);
@@ -397,12 +401,15 @@ class _AddEditMedicineScreenState
                               onTap: () async {
                                 final picked = await showDatePicker(
                                   context: context,
-                                  initialDate: _endDate ??
-                                      DateTime.now()
-                                          .add(const Duration(days: 7)),
+                                  initialDate:
+                                      _endDate ??
+                                      DateTime.now().add(
+                                        const Duration(days: 7),
+                                      ),
                                   firstDate: _startDate,
-                                  lastDate: DateTime.now()
-                                      .add(const Duration(days: 730)),
+                                  lastDate: DateTime.now().add(
+                                    const Duration(days: 730),
+                                  ),
                                 );
                                 if (picked != null) {
                                   setState(() => _endDate = picked);

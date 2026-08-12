@@ -16,12 +16,12 @@ class AppSettingsModel extends HiveObject {
   });
 
   factory AppSettingsModel.defaultSettings() => AppSettingsModel(
-        soundTheme: 'default',
-        vibrationEnabled: true,
-        defaultSnoozeMinutes: 10,
-        notificationsEnabled: true,
-        isDarkMode: false,
-      );
+    soundTheme: 'default',
+    vibrationEnabled: true,
+    defaultSnoozeMinutes: 10,
+    notificationsEnabled: true,
+    isDarkMode: false,
+  );
 
   AppSettingsModel copyWith({
     String? soundTheme,
@@ -34,8 +34,7 @@ class AppSettingsModel extends HiveObject {
       soundTheme: soundTheme ?? this.soundTheme,
       vibrationEnabled: vibrationEnabled ?? this.vibrationEnabled,
       defaultSnoozeMinutes: defaultSnoozeMinutes ?? this.defaultSnoozeMinutes,
-      notificationsEnabled:
-          notificationsEnabled ?? this.notificationsEnabled,
+      notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
       isDarkMode: isDarkMode ?? this.isDarkMode,
     );
   }

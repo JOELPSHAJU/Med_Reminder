@@ -5,7 +5,9 @@ class AppColors {
   static const Color primary = Color(0xFF00796B); // Neutral Blue-Green 700
   static const Color primaryDark = Color(0xFF004D40); // Deep Slate Cyan 900
   static const Color primaryLight = Color(0xFF26A69A); // Soft Seafoam Teal 400
-  static const Color primaryContainer = Color(0xFFE0F2F1); // Light Soft Mint/Teal
+  static const Color primaryContainer = Color(
+    0xFFE0F2F1,
+  ); // Light Soft Mint/Teal
   static const Color primarySubtle = Color(0xFFF2F9F9); // Ultra Light Seafoam
 
   static const Color secondary = Color(0xFF455A64); // Cool Slate Blue

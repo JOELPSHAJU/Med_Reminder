@@ -38,7 +38,10 @@ class HistoryScreen extends ConsumerWidget {
         children: [
           // Search & Filter Header Container
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 8.0,
+            ),
             child: Column(
               children: [
                 // Modern Search Input
@@ -48,17 +51,23 @@ class HistoryScreen extends ConsumerWidget {
                   },
                   decoration: InputDecoration(
                     hintText: 'Search medicine, notes...',
-                    prefixIcon: const Icon(Icons.search_rounded,
-                        color: AppColors.primary, size: 20),
-                    contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    prefixIcon: const Icon(
+                      Icons.search_rounded,
+                      color: AppColors.primary,
+                      size: 20,
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
                     suffixIcon: searchQuery.isNotEmpty
                         ? IconButton(
                             icon: const Icon(Icons.clear_rounded, size: 18),
                             onPressed: () {
                               ref
-                                  .read(historySearchQueryProvider.notifier)
-                                  .state = '';
+                                      .read(historySearchQueryProvider.notifier)
+                                      .state =
+                                  '';
                             },
                           )
                         : null,
@@ -123,34 +132,42 @@ class HistoryScreen extends ConsumerWidget {
                             color: dateFilter != null
                                 ? Colors.white
                                 : (isDark
-                                    ? AppColors.darkTextPrimary
-                                    : AppColors.lightTextPrimary),
+                                      ? AppColors.darkTextPrimary
+                                      : AppColors.lightTextPrimary),
                           ),
                         ),
                         backgroundColor: dateFilter != null
                             ? AppColors.primary
                             : (isDark
-                                ? AppColors.darkSurface
-                                : AppColors.lightSurface),
+                                  ? AppColors.darkSurface
+                                  : AppColors.lightSurface),
                         side: BorderSide(
                           color: dateFilter != null
                               ? AppColors.primary
                               : (isDark
-                                  ? AppColors.darkBorder
-                                  : AppColors.lightBorder),
+                                    ? AppColors.darkBorder
+                                    : AppColors.lightBorder),
                         ),
                         onPressed: () async {
                           final picked = await showDatePicker(
                             context: context,
                             initialDate: dateFilter ?? DateTime.now(),
-                            firstDate: DateTime.now()
-                                .subtract(const Duration(days: 365)),
-                            lastDate:
-                                DateTime.now().add(const Duration(days: 365)),
+                            firstDate: DateTime.now().subtract(
+                              const Duration(days: 365),
+                            ),
+                            lastDate: DateTime.now().add(
+                              const Duration(days: 365),
+                            ),
                           );
                           if (picked != null) {
-                            ref.read(historyDateRangeFilterProvider.notifier).state = null;
-                            ref.read(historyDateFilterProvider.notifier).state = picked;
+                            ref
+                                    .read(
+                                      historyDateRangeFilterProvider.notifier,
+                                    )
+                                    .state =
+                                null;
+                            ref.read(historyDateFilterProvider.notifier).state =
+                                picked;
                           }
                         },
                       ),
@@ -158,12 +175,16 @@ class HistoryScreen extends ConsumerWidget {
                         const SizedBox(width: 2),
                         GestureDetector(
                           onTap: () {
-                            ref.read(historyDateFilterProvider.notifier).state = null;
+                            ref.read(historyDateFilterProvider.notifier).state =
+                                null;
                           },
                           child: const Padding(
                             padding: EdgeInsets.only(right: 6.0),
-                            child: Icon(Icons.cancel_rounded,
-                                size: 18, color: Colors.grey),
+                            child: Icon(
+                              Icons.cancel_rounded,
+                              size: 18,
+                              color: Colors.grey,
+                            ),
                           ),
                         ),
                       ],
@@ -189,38 +210,49 @@ class HistoryScreen extends ConsumerWidget {
                             color: dateRangeFilter != null
                                 ? Colors.white
                                 : (isDark
-                                    ? AppColors.darkTextPrimary
-                                    : AppColors.lightTextPrimary),
+                                      ? AppColors.darkTextPrimary
+                                      : AppColors.lightTextPrimary),
                           ),
                         ),
                         backgroundColor: dateRangeFilter != null
                             ? AppColors.primary
                             : (isDark
-                                ? AppColors.darkSurface
-                                : AppColors.lightSurface),
+                                  ? AppColors.darkSurface
+                                  : AppColors.lightSurface),
                         side: BorderSide(
                           color: dateRangeFilter != null
                               ? AppColors.primary
                               : (isDark
-                                  ? AppColors.darkBorder
-                                  : AppColors.lightBorder),
+                                    ? AppColors.darkBorder
+                                    : AppColors.lightBorder),
                         ),
                         onPressed: () async {
                           final picked = await showDateRangePicker(
                             context: context,
-                            initialDateRange: dateRangeFilter ??
+                            initialDateRange:
+                                dateRangeFilter ??
                                 DateTimeRange(
-                                  start: DateTime.now().subtract(const Duration(days: 7)),
+                                  start: DateTime.now().subtract(
+                                    const Duration(days: 7),
+                                  ),
                                   end: DateTime.now(),
                                 ),
-                            firstDate: DateTime.now()
-                                .subtract(const Duration(days: 365)),
-                            lastDate:
-                                DateTime.now().add(const Duration(days: 365)),
+                            firstDate: DateTime.now().subtract(
+                              const Duration(days: 365),
+                            ),
+                            lastDate: DateTime.now().add(
+                              const Duration(days: 365),
+                            ),
                           );
                           if (picked != null) {
-                            ref.read(historyDateFilterProvider.notifier).state = null;
-                            ref.read(historyDateRangeFilterProvider.notifier).state = picked;
+                            ref.read(historyDateFilterProvider.notifier).state =
+                                null;
+                            ref
+                                    .read(
+                                      historyDateRangeFilterProvider.notifier,
+                                    )
+                                    .state =
+                                picked;
                           }
                         },
                       ),
@@ -228,12 +260,20 @@ class HistoryScreen extends ConsumerWidget {
                         const SizedBox(width: 2),
                         GestureDetector(
                           onTap: () {
-                            ref.read(historyDateRangeFilterProvider.notifier).state = null;
+                            ref
+                                    .read(
+                                      historyDateRangeFilterProvider.notifier,
+                                    )
+                                    .state =
+                                null;
                           },
                           child: const Padding(
                             padding: EdgeInsets.only(right: 6.0),
-                            child: Icon(Icons.cancel_rounded,
-                                size: 18, color: Colors.grey),
+                            child: Icon(
+                              Icons.cancel_rounded,
+                              size: 18,
+                              color: Colors.grey,
+                            ),
                           ),
                         ),
                       ],
@@ -260,11 +300,15 @@ class HistoryScreen extends ConsumerWidget {
                             ),
                             selectedColor: color,
                             backgroundColor: color.withValues(alpha: 0.1),
-                            side: BorderSide(color: color.withValues(alpha: 0.3)),
+                            side: BorderSide(
+                              color: color.withValues(alpha: 0.3),
+                            ),
                             onSelected: (selected) {
                               ref
                                   .read(historyStatusFilterProvider.notifier)
-                                  .state = selected ? status : null;
+                                  .state = selected
+                                  ? status
+                                  : null;
                             },
                           ),
                         );
@@ -329,7 +373,9 @@ class HistoryScreen extends ConsumerWidget {
                         children: [
                           Padding(
                             padding: const EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 4),
+                              vertical: 10,
+                              horizontal: 4,
+                            ),
                             child: Row(
                               children: [
                                 Container(
@@ -352,10 +398,13 @@ class HistoryScreen extends ConsumerWidget {
                                 const SizedBox(width: 6),
                                 Container(
                                   padding: const EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 2),
+                                    horizontal: 8,
+                                    vertical: 2,
+                                  ),
                                   decoration: BoxDecoration(
-                                    color: AppColors.primary
-                                        .withValues(alpha: 0.1),
+                                    color: AppColors.primary.withValues(
+                                      alpha: 0.1,
+                                    ),
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                   child: Text(
@@ -409,13 +458,12 @@ class HistoryScreen extends ConsumerWidget {
           color: isSelected
               ? Colors.white
               : (isDark
-                  ? AppColors.darkTextPrimary
-                  : AppColors.lightTextPrimary),
+                    ? AppColors.darkTextPrimary
+                    : AppColors.lightTextPrimary),
         ),
       ),
       selectedColor: AppColors.primary,
-      backgroundColor:
-          isDark ? AppColors.darkSurface : AppColors.lightSurface,
+      backgroundColor: isDark ? AppColors.darkSurface : AppColors.lightSurface,
       side: BorderSide(
         color: isSelected
             ? AppColors.primary
@@ -430,7 +478,8 @@ class HistoryScreen extends ConsumerWidget {
   }
 
   Map<String, List<DoseOccurrenceModel>> _groupOccurrencesByDate(
-      List<DoseOccurrenceModel> occurrences) {
+    List<DoseOccurrenceModel> occurrences,
+  ) {
     final Map<String, List<DoseOccurrenceModel>> grouped = {};
     final now = DateTime.now();
 
@@ -440,7 +489,9 @@ class HistoryScreen extends ConsumerWidget {
       if (DateFormatter.isSameDay(occ.scheduledDateTime, now)) {
         headerLabel = 'Today ($dateStr)';
       } else if (DateFormatter.isSameDay(
-          occ.scheduledDateTime, now.add(const Duration(days: 1)))) {
+        occ.scheduledDateTime,
+        now.add(const Duration(days: 1)),
+      )) {
         headerLabel = 'Tomorrow ($dateStr)';
       }
 

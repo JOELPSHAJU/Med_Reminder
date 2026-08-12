@@ -16,9 +16,6 @@ abstract class MedicineRepository {
     DoseStatusEnum newStatus, {
     DateTime? takenTime,
   });
-  Future<void> snoozeOccurrence(
-    String occurrenceId,
-    int snoozeMinutes,
-  );
+  Future<void> snoozeOccurrence(String occurrenceId, int snoozeMinutes);
   Future<void> checkAndSyncOccurrences();
 }

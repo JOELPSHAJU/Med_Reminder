@@ -171,40 +171,42 @@ class DashboardScreen extends ConsumerWidget {
                     ],
                   ),
                   GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => const HistoryScreen(),
-                          ),
-                        );
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: AppColors.primaryContainer,
-                          borderRadius: BorderRadius.circular(20),
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const HistoryScreen(),
                         ),
-                        child: Row(
-                          children: [
-                            Text(
-                              'See All',
-                              style: GoogleFonts.plusJakartaSans(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.primaryDark,
-                              ),
-                            ),
-                            const SizedBox(width: 4),
-                            const Icon(
-                              Icons.arrow_forward_rounded,
-                              size: 14,
+                      );
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.primaryContainer,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        children: [
+                          Text(
+                            'See All',
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
                               color: AppColors.primaryDark,
                             ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(width: 4),
+                          const Icon(
+                            Icons.arrow_forward_rounded,
+                            size: 14,
+                            color: AppColors.primaryDark,
+                          ),
+                        ],
                       ),
                     ),
+                  ),
                 ],
               ),
               const SizedBox(height: 12),
@@ -213,7 +215,10 @@ class DashboardScreen extends ConsumerWidget {
               if (upcomingReminders.isEmpty)
                 Center(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 36, horizontal: 16),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 36,
+                      horizontal: 16,
+                    ),
                     child: Column(
                       children: [
                         Container(
@@ -259,7 +264,9 @@ class DashboardScreen extends ConsumerWidget {
                           // Today's Skipped & Missed Summary Badges
                           Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 14, vertical: 10),
+                              horizontal: 14,
+                              vertical: 10,
+                            ),
                             decoration: BoxDecoration(
                               color: isDark
                                   ? AppColors.darkSurface
@@ -306,7 +313,9 @@ class DashboardScreen extends ConsumerWidget {
                 ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  itemCount: upcomingReminders.length > 5 ? 5 : upcomingReminders.length,
+                  itemCount: upcomingReminders.length > 5
+                      ? 5
+                      : upcomingReminders.length,
                   itemBuilder: (context, index) {
                     final occ = upcomingReminders[index];
                     return ReminderItemWidget(
@@ -316,7 +325,8 @@ class DashboardScreen extends ConsumerWidget {
 
                         // Real-time Check: Warning if marking taken before scheduled time (>15 mins early)
                         if (occ.scheduledDateTime.isAfter(
-                            now.add(const Duration(minutes: 15)))) {
+                          now.add(const Duration(minutes: 15)),
+                        )) {
                           final confirm = await showDialog<bool>(
                             context: context,
                             builder: (ctx) => AlertDialog(
@@ -325,8 +335,11 @@ class DashboardScreen extends ConsumerWidget {
                               ),
                               title: Row(
                                 children: [
-                                  const Icon(Icons.warning_amber_rounded,
-                                      color: Colors.orange, size: 28),
+                                  const Icon(
+                                    Icons.warning_amber_rounded,
+                                    color: Colors.orange,
+                                    size: 28,
+                                  ),
                                   const SizedBox(width: 8),
                                   Expanded(
                                     child: Text(
@@ -341,8 +354,9 @@ class DashboardScreen extends ConsumerWidget {
                               ),
                               content: Text(
                                 'This dose for ${occ.medicineNameSnapshot} is scheduled for ${DateFormatter.formatTime(occ.scheduledDateTime)} (${_getEarlyTimeString(occ.scheduledDateTime, now)}).\n\nAre you sure you want to log it as taken early?',
-                                style:
-                                    GoogleFonts.plusJakartaSans(fontSize: 14),
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 14,
+                                ),
                               ),
                               actions: [
                                 TextButton(
@@ -387,14 +401,16 @@ class DashboardScreen extends ConsumerWidget {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(
-                                  '${occ.medicineNameSnapshot} marked as Taken'),
+                                '${occ.medicineNameSnapshot} marked as Taken',
+                              ),
                               action: SnackBarAction(
                                 label: 'UNDO',
                                 textColor: AppColors.primary,
                                 onPressed: () {
                                   ref
-                                      .read(medicineStateNotifierProvider
-                                          .notifier)
+                                      .read(
+                                        medicineStateNotifierProvider.notifier,
+                                      )
                                       .updateOccurrenceStatus(
                                         occ.id,
                                         DoseStatusEnum.pending,
@@ -419,7 +435,9 @@ class DashboardScreen extends ConsumerWidget {
                               defaultMinutes: settings.defaultSnoozeMinutes,
                               onSnoozeSelected: (minutes) {
                                 ref
-                                    .read(medicineStateNotifierProvider.notifier)
+                                    .read(
+                                      medicineStateNotifierProvider.notifier,
+                                    )
                                     .snoozeOccurrence(occ.id, minutes);
                               },
                             );
@@ -439,14 +457,16 @@ class DashboardScreen extends ConsumerWidget {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(
-                                  '${occ.medicineNameSnapshot} marked as Skipped'),
+                                '${occ.medicineNameSnapshot} marked as Skipped',
+                              ),
                               action: SnackBarAction(
                                 label: 'UNDO',
                                 textColor: AppColors.primary,
                                 onPressed: () {
                                   ref
-                                      .read(medicineStateNotifierProvider
-                                          .notifier)
+                                      .read(
+                                        medicineStateNotifierProvider.notifier,
+                                      )
                                       .updateOccurrenceStatus(
                                         occ.id,
                                         DoseStatusEnum.pending,
@@ -492,14 +512,12 @@ class DashboardScreen extends ConsumerWidget {
                     );
                   },
                 ),
-
             ],
           ),
         ),
       ),
     );
   }
-
 
   Widget _buildSummaryChip({
     required String label,
@@ -537,4 +555,3 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 }
-

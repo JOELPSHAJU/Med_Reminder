@@ -76,11 +76,14 @@ class HistoryItemWidget extends ConsumerWidget {
                                     occurrence.id,
                                     DoseStatusEnum.pending,
                                   );
-                              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                              ScaffoldMessenger.of(
+                                context,
+                              ).hideCurrentSnackBar();
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(
-                                      'Reset ${occurrence.medicineNameSnapshot} to Pending'),
+                                    'Reset ${occurrence.medicineNameSnapshot} to Pending',
+                                  ),
                                   duration: const Duration(seconds: 2),
                                 ),
                               );
@@ -88,7 +91,9 @@ class HistoryItemWidget extends ConsumerWidget {
                             borderRadius: BorderRadius.circular(8),
                             child: Container(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 4),
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
                               decoration: BoxDecoration(
                                 color: isDark
                                     ? Colors.white.withValues(alpha: 0.1)
@@ -154,7 +159,9 @@ class HistoryItemWidget extends ConsumerWidget {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          DateFormatter.formatDateTime(occurrence.scheduledDateTime),
+                          DateFormatter.formatDateTime(
+                            occurrence.scheduledDateTime,
+                          ),
                           style: GoogleFonts.plusJakartaSans(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,

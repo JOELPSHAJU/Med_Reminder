@@ -1,11 +1,6 @@
 import 'package:hive/hive.dart';
 
-enum DoseStatusEnum {
-  pending,
-  taken,
-  missed,
-  skipped,
-}
+enum DoseStatusEnum { pending, taken, missed, skipped }
 
 class DoseStatusAdapter extends TypeAdapter<DoseStatusEnum> {
   @override

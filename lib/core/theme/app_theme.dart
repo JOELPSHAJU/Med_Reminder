@@ -4,7 +4,9 @@ import 'app_colors.dart';
 
 class AppTheme {
   static ThemeData get lightTheme {
-    final baseText = GoogleFonts.plusJakartaSansTextTheme(ThemeData.light().textTheme);
+    final baseText = GoogleFonts.plusJakartaSansTextTheme(
+      ThemeData.light().textTheme,
+    );
 
     return ThemeData(
       useMaterial3: true,
@@ -75,9 +77,7 @@ class AppTheme {
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: AppColors.lightSurface,
@@ -89,7 +89,10 @@ class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: Colors.white,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 18,
+          vertical: 14,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: const BorderSide(color: AppColors.lightBorder),
@@ -120,9 +123,7 @@ class AppTheme {
         dialHandColor: AppColors.primary,
         dialBackgroundColor: const Color(0xFFE0F2F1),
         dialTextColor: AppColors.lightTextPrimary,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         hourMinuteShape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
@@ -132,15 +133,15 @@ class AppTheme {
         headerBackgroundColor: AppColors.primary,
         headerForegroundColor: Colors.white,
         surfaceTintColor: Colors.transparent,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       ),
     );
   }
 
   static ThemeData get darkTheme {
-    final baseText = GoogleFonts.plusJakartaSansTextTheme(ThemeData.dark().textTheme);
+    final baseText = GoogleFonts.plusJakartaSansTextTheme(
+      ThemeData.dark().textTheme,
+    );
 
     return ThemeData(
       useMaterial3: true,
@@ -211,9 +212,7 @@ class AppTheme {
         backgroundColor: AppColors.primaryLight,
         foregroundColor: Colors.black,
         elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: AppColors.darkSurface,
@@ -225,7 +224,10 @@ class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppColors.darkSurface,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 18,
+          vertical: 14,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: const BorderSide(color: AppColors.darkBorder),
@@ -236,7 +238,10 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: AppColors.primaryLight, width: 1.5),
+          borderSide: const BorderSide(
+            color: AppColors.primaryLight,
+            width: 1.5,
+          ),
         ),
       ),
       timePickerTheme: TimePickerThemeData(
@@ -248,18 +253,14 @@ class AppTheme {
         dialHandColor: AppColors.primaryLight,
         dialBackgroundColor: const Color(0xFF121E24),
         dialTextColor: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       ),
       datePickerTheme: DatePickerThemeData(
         backgroundColor: AppColors.darkSurface,
         headerBackgroundColor: AppColors.primaryDark,
         headerForegroundColor: Colors.white,
         surfaceTintColor: Colors.transparent,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       ),
     );
   }

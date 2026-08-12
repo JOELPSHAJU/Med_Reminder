@@ -17,32 +17,34 @@ void main() {
 
     if (!Hive.isAdapterRegistered(0)) Hive.registerAdapter(DoseStatusAdapter());
     if (!Hive.isAdapterRegistered(1)) Hive.registerAdapter(DoseModelAdapter());
-    if (!Hive.isAdapterRegistered(2)) Hive.registerAdapter(MedicineModelAdapter());
-    if (!Hive.isAdapterRegistered(3)) Hive.registerAdapter(DoseOccurrenceModelAdapter());
-    if (!Hive.isAdapterRegistered(4)) Hive.registerAdapter(AppSettingsModelAdapter());
+    if (!Hive.isAdapterRegistered(2))
+      Hive.registerAdapter(MedicineModelAdapter());
+    if (!Hive.isAdapterRegistered(3))
+      Hive.registerAdapter(DoseOccurrenceModelAdapter());
+    if (!Hive.isAdapterRegistered(4))
+      Hive.registerAdapter(AppSettingsModelAdapter());
 
     await Hive.openBox<MedicineModel>(AppConstants.medicineBoxName);
     await Hive.openBox<DoseOccurrenceModel>(AppConstants.occurrenceBoxName);
     await Hive.openBox<AppSettingsModel>(AppConstants.settingsBoxName);
   });
 
-  testWidgets('App renders SplashScreen and transitions to MainNavigationScreen', (WidgetTester tester) async {
-    await tester.pumpWidget(
-      const ProviderScope(
-        child: MedReminderApp(),
-      ),
-    );
-    await tester.pump();
+  testWidgets(
+    'App renders SplashScreen and transitions to MainNavigationScreen',
+    (WidgetTester tester) async {
+      await tester.pumpWidget(const ProviderScope(child: MedReminderApp()));
+      await tester.pump();
 
-    // Verify SplashScreen is rendered initially
-    expect(find.text('Med Reminder'), findsOneWidget);
-    expect(find.text('Your Daily Health & Dose Companion'), findsOneWidget);
+      // Verify SplashScreen is rendered initially
+      expect(find.text('Med Reminder'), findsOneWidget);
+      expect(find.text('Your Daily Health & Dose Companion'), findsOneWidget);
 
-    // Pump time for splash screen timer navigation
-    await tester.pump(const Duration(seconds: 3));
-    await tester.pumpAndSettle();
+      // Pump time for splash screen timer navigation
+      await tester.pump(const Duration(seconds: 3));
+      await tester.pumpAndSettle();
 
-    // Verify MainNavigationScreen is rendered after splash transition
-    expect(find.text('DAILY PROGRESS TRACKER'), findsOneWidget);
-  });
+      // Verify MainNavigationScreen is rendered after splash transition
+      expect(find.text('DAILY PROGRESS TRACKER'), findsOneWidget);
+    },
+  );
 }

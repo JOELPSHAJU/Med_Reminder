@@ -28,7 +28,9 @@ class GenerateOccurrencesUseCase {
         medicine.endDate!.day,
       );
     } else {
-      windowEnd = today.add(const Duration(days: AppConstants.ongoingScheduleWindowDays));
+      windowEnd = today.add(
+        const Duration(days: AppConstants.ongoingScheduleWindowDays),
+      );
     }
 
     DateTime currentDay = startDateOnly;
@@ -38,7 +40,7 @@ class GenerateOccurrencesUseCase {
     final Map<String, DoseOccurrenceModel> existingMap = {
       for (final occ in existingOccurrences)
         if (occ.medicineId == medicine.id)
-          _buildKey(occ.medicineId, occ.scheduledDateTime): occ
+          _buildKey(occ.medicineId, occ.scheduledDateTime): occ,
     };
 
     while (!currentDay.isAfter(windowEnd)) {

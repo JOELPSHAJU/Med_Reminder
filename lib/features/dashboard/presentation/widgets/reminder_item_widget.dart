@@ -71,10 +71,7 @@ class _ReminderItemWidgetState extends State<ReminderItemWidget> {
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: statusColor.withValues(alpha: 0.3),
-          width: 1,
-        ),
+        border: Border.all(color: statusColor.withValues(alpha: 0.3), width: 1),
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16),
@@ -144,8 +141,12 @@ class _ReminderItemWidgetState extends State<ReminderItemWidget> {
                                       padding: const EdgeInsets.all(4),
                                       decoration: BoxDecoration(
                                         color: isDark
-                                            ? Colors.white.withValues(alpha: 0.1)
-                                            : Colors.black.withValues(alpha: 0.05),
+                                            ? Colors.white.withValues(
+                                                alpha: 0.1,
+                                              )
+                                            : Colors.black.withValues(
+                                                alpha: 0.05,
+                                              ),
                                         borderRadius: BorderRadius.circular(8),
                                       ),
                                       child: Icon(
@@ -182,7 +183,9 @@ class _ReminderItemWidgetState extends State<ReminderItemWidget> {
                     children: [
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 3),
+                          horizontal: 8,
+                          vertical: 3,
+                        ),
                         decoration: BoxDecoration(
                           color: isDark
                               ? const Color(0xFF334155)
@@ -201,7 +204,8 @@ class _ReminderItemWidgetState extends State<ReminderItemWidget> {
                             const SizedBox(width: 4),
                             Text(
                               DateFormatter.formatTime(
-                                  occurrence.scheduledDateTime),
+                                occurrence.scheduledDateTime,
+                              ),
                               style: GoogleFonts.plusJakartaSans(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 11,
@@ -211,11 +215,15 @@ class _ReminderItemWidgetState extends State<ReminderItemWidget> {
                         ),
                       ),
                       if (isPending &&
-                          occurrence.scheduledDateTime.isAfter(DateTime.now())) ...[
+                          occurrence.scheduledDateTime.isAfter(
+                            DateTime.now(),
+                          )) ...[
                         const SizedBox(width: 6),
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 3),
+                            horizontal: 8,
+                            vertical: 3,
+                          ),
                           decoration: BoxDecoration(
                             color: AppColors.primary.withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(8),
@@ -234,7 +242,8 @@ class _ReminderItemWidgetState extends State<ReminderItemWidget> {
                               const SizedBox(width: 4),
                               Text(
                                 _getRelativeCountdownText(
-                                    occurrence.scheduledDateTime),
+                                  occurrence.scheduledDateTime,
+                                ),
                                 style: GoogleFonts.plusJakartaSans(
                                   fontWeight: FontWeight.w800,
                                   fontSize: 11,
@@ -251,7 +260,9 @@ class _ReminderItemWidgetState extends State<ReminderItemWidget> {
                         const SizedBox(width: 6),
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 3),
+                            horizontal: 8,
+                            vertical: 3,
+                          ),
                           decoration: BoxDecoration(
                             color: AppColors.primaryContainer,
                             borderRadius: BorderRadius.circular(8),
@@ -273,7 +284,9 @@ class _ReminderItemWidgetState extends State<ReminderItemWidget> {
                     const SizedBox(height: 6),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 3),
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
                       decoration: BoxDecoration(
                         color: AppColors.statusSkippedContainer,
                         borderRadius: BorderRadius.circular(8),
@@ -281,8 +294,11 @@ class _ReminderItemWidgetState extends State<ReminderItemWidget> {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.snooze_rounded,
-                              size: 13, color: AppColors.statusSkippedText),
+                          const Icon(
+                            Icons.snooze_rounded,
+                            size: 13,
+                            color: AppColors.statusSkippedText,
+                          ),
                           const SizedBox(width: 4),
                           Text(
                             'Snoozed until ${DateFormatter.formatTime(occurrence.snoozedUntil!)}',
@@ -320,8 +336,11 @@ class _ReminderItemWidgetState extends State<ReminderItemWidget> {
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
-                            icon: const Icon(Icons.check_circle_rounded,
-                                size: 14, color: Colors.white),
+                            icon: const Icon(
+                              Icons.check_circle_rounded,
+                              size: 14,
+                              color: Colors.white,
+                            ),
                             label: Text(
                               'Taken',
                               style: GoogleFonts.plusJakartaSans(
@@ -351,8 +370,11 @@ class _ReminderItemWidgetState extends State<ReminderItemWidget> {
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
-                            icon: const Icon(Icons.snooze_rounded,
-                                size: 14, color: Colors.white),
+                            icon: const Icon(
+                              Icons.snooze_rounded,
+                              size: 14,
+                              color: Colors.white,
+                            ),
                             label: Text(
                               'Snooze',
                               style: GoogleFonts.plusJakartaSans(
@@ -376,7 +398,9 @@ class _ReminderItemWidgetState extends State<ReminderItemWidget> {
                                 ? AppColors.darkTextSecondary
                                 : AppColors.lightTextSecondary,
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 8),
+                              horizontal: 10,
+                              vertical: 8,
+                            ),
                             minimumSize: Size.zero,
                             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             shape: RoundedRectangleBorder(
@@ -398,7 +422,9 @@ class _ReminderItemWidgetState extends State<ReminderItemWidget> {
                     // Completed Status Banner
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 6),
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         color: _getBannerBgColor(occurrence.status),
                         borderRadius: BorderRadius.circular(10),
@@ -432,7 +458,9 @@ class _ReminderItemWidgetState extends State<ReminderItemWidget> {
                               },
                               child: Container(
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 10, vertical: 4),
+                                  horizontal: 10,
+                                  vertical: 4,
+                                ),
                                 decoration: BoxDecoration(
                                   color: isDark
                                       ? Colors.white.withValues(alpha: 0.12)

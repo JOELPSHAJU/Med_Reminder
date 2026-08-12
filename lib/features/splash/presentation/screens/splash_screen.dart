@@ -32,16 +32,10 @@ class _SplashScreenState extends State<SplashScreen>
       duration: const Duration(milliseconds: 1200),
     );
 
-    _fadeAnim = CurvedAnimation(
-      parent: _animController,
-      curve: Curves.easeIn,
-    );
+    _fadeAnim = CurvedAnimation(parent: _animController, curve: Curves.easeIn);
 
     _scaleAnim = Tween<double>(begin: 0.8, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _animController,
-        curve: Curves.easeOutBack,
-      ),
+      CurvedAnimation(parent: _animController, curve: Curves.easeOutBack),
     );
 
     _animController.forward();
@@ -122,9 +116,7 @@ class _SplashScreenState extends State<SplashScreen>
                     child: Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: isDark
-                            ? AppColors.darkSurface
-                            : Colors.white,
+                        color: isDark ? AppColors.darkSurface : Colors.white,
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
@@ -197,8 +189,9 @@ class _SplashScreenState extends State<SplashScreen>
                         width: 160,
                         child: LinearProgressIndicator(
                           value: _progressValue,
-                          backgroundColor:
-                              AppColors.primary.withValues(alpha: 0.15),
+                          backgroundColor: AppColors.primary.withValues(
+                            alpha: 0.15,
+                          ),
                           valueColor: const AlwaysStoppedAnimation<Color>(
                             AppColors.primary,
                           ),

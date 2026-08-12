@@ -20,24 +20,24 @@ class DoseModel extends HiveObject {
   });
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'medicineId': medicineId,
-        'timeHour': timeHour,
-        'timeMinute': timeMinute,
-        'quantity': quantity,
-        'unit': unit,
-        'foodInstruction': foodInstruction,
-      };
+    'id': id,
+    'medicineId': medicineId,
+    'timeHour': timeHour,
+    'timeMinute': timeMinute,
+    'quantity': quantity,
+    'unit': unit,
+    'foodInstruction': foodInstruction,
+  };
 
   factory DoseModel.fromJson(Map<String, dynamic> json) => DoseModel(
-        id: json['id'] as String,
-        medicineId: json['medicineId'] as String,
-        timeHour: json['timeHour'] as int,
-        timeMinute: json['timeMinute'] as int,
-        quantity: (json['quantity'] as num).toDouble(),
-        unit: json['unit'] as String,
-        foodInstruction: json['foodInstruction'] as String,
-      );
+    id: json['id'] as String,
+    medicineId: json['medicineId'] as String,
+    timeHour: json['timeHour'] as int,
+    timeMinute: json['timeMinute'] as int,
+    quantity: (json['quantity'] as num).toDouble(),
+    unit: json['unit'] as String,
+    foodInstruction: json['foodInstruction'] as String,
+  );
 }
 
 class DoseModelAdapter extends TypeAdapter<DoseModel> {

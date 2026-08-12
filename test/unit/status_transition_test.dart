@@ -6,31 +6,39 @@ import 'package:med_reminder/features/medicine_core/domain/usecases/check_missed
 
 void main() {
   group('Status Transition & Stats Tests', () {
-    test('CheckMissedOccurrencesUseCase auto-transitions past due pending items to missed', () {
-      final now = DateTime(2026, 8, 10, 12, 0); // 12:00 PM
-      final pastScheduled = DateTime(2026, 8, 10, 10, 0); // 10:00 AM (2 hours ago)
+    test(
+      'CheckMissedOccurrencesUseCase auto-transitions past due pending items to missed',
+      () {
+        final now = DateTime(2026, 8, 10, 12, 0); // 12:00 PM
+        final pastScheduled = DateTime(
+          2026,
+          8,
+          10,
+          10,
+          0,
+        ); // 10:00 AM (2 hours ago)
 
-      final occurrence = DoseOccurrenceModel(
-        id: 'occ_1',
-        medicineId: 'med_1',
-        doseId: 'dose_1',
-        scheduledDateTime: pastScheduled,
-        status: DoseStatusEnum.pending,
-        medicineNameSnapshot: 'Vitamin D',
-        doseQuantitySnapshot: 1,
-        doseUnitSnapshot: 'Capsule',
-        foodInstructionSnapshot: 'No instruction',
-        medicineTypeSnapshot: 'Capsule',
-        medicineStrengthSnapshot: '1000 IU',
-      );
+        final occurrence = DoseOccurrenceModel(
+          id: 'occ_1',
+          medicineId: 'med_1',
+          doseId: 'dose_1',
+          scheduledDateTime: pastScheduled,
+          status: DoseStatusEnum.pending,
+          medicineNameSnapshot: 'Vitamin D',
+          doseQuantitySnapshot: 1,
+          doseUnitSnapshot: 'Capsule',
+          foodInstructionSnapshot: 'No instruction',
+          medicineTypeSnapshot: 'Capsule',
+          medicineStrengthSnapshot: '1000 IU',
+        );
 
-      final result = CheckMissedOccurrencesUseCase.evaluateMissedOccurrences(
-        [occurrence],
-        nowOverride: now,
-      );
+        final result = CheckMissedOccurrencesUseCase.evaluateMissedOccurrences([
+          occurrence,
+        ], nowOverride: now);
 
-      expect(result.first.status, equals(DoseStatusEnum.missed));
-    });
+        expect(result.first.status, equals(DoseStatusEnum.missed));
+      },
+    );
 
     test('GetDashboardStatsUseCase accurately calculates adherence stats', () {
       final targetDate = DateTime(2026, 8, 10);
@@ -77,7 +85,10 @@ void main() {
         ),
       ];
 
-      final stats = GetDashboardStatsUseCase.calculateForDate(occurrences, targetDate);
+      final stats = GetDashboardStatsUseCase.calculateForDate(
+        occurrences,
+        targetDate,
+      );
 
       expect(stats.totalDoses, equals(3));
       expect(stats.takenCount, equals(1));

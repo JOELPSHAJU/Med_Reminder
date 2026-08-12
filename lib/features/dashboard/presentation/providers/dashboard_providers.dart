@@ -71,10 +71,7 @@ class MedicineStateNotifier extends StateNotifier<AsyncValue<void>> {
     }
   }
 
-  Future<void> snoozeOccurrence(
-    String occurrenceId,
-    int minutes,
-  ) async {
+  Future<void> snoozeOccurrence(String occurrenceId, int minutes) async {
     state = const AsyncValue.loading();
     try {
       await _repository.snoozeOccurrence(occurrenceId, minutes);
@@ -87,9 +84,9 @@ class MedicineStateNotifier extends StateNotifier<AsyncValue<void>> {
 
 final medicineStateNotifierProvider =
     StateNotifierProvider<MedicineStateNotifier, AsyncValue<void>>((ref) {
-  final repo = ref.watch(medicineRepositoryProvider);
-  return MedicineStateNotifier(repo);
-});
+      final repo = ref.watch(medicineRepositoryProvider);
+      return MedicineStateNotifier(repo);
+    });
 
 final allMedicinesProvider = Provider<List<MedicineModel>>((ref) {
   ref.watch(medicineStateNotifierProvider);
@@ -98,7 +95,9 @@ final allMedicinesProvider = Provider<List<MedicineModel>>((ref) {
 });
 
 final medicineSearchQueryProvider = StateProvider<String>((ref) => '');
-final medicineStatusFilterProvider = StateProvider<String>((ref) => 'All'); // 'All', 'Active', 'Paused'
+final medicineStatusFilterProvider = StateProvider<String>(
+  (ref) => 'All',
+); // 'All', 'Active', 'Paused'
 
 final filteredMedicinesProvider = Provider<List<MedicineModel>>((ref) {
   final medicines = ref.watch(allMedicinesProvider);
@@ -155,7 +154,8 @@ final upcomingOccurrencesProvider = Provider<List<DoseOccurrenceModel>>((ref) {
   final targetDate = ref.watch(selectedDashboardDateProvider);
   final now = DateTime.now();
 
-  final isToday = targetDate.year == now.year &&
+  final isToday =
+      targetDate.year == now.year &&
       targetDate.month == now.month &&
       targetDate.day == now.day;
 

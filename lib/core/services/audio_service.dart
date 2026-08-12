@@ -14,7 +14,9 @@ class AudioService {
       } else {
         // Fallback default system player action / notification tone
         await _audioPlayer.play(
-          UrlSource('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3'),
+          UrlSource(
+            'https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3',
+          ),
         );
       }
     } catch (e) {

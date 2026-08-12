@@ -6,7 +6,7 @@ class SettingsRepositoryImpl implements SettingsRepository {
   final SettingsLocalDataSource _dataSource;
 
   SettingsRepositoryImpl({SettingsLocalDataSource? dataSource})
-      : _dataSource = dataSource ?? SettingsLocalDataSource();
+    : _dataSource = dataSource ?? SettingsLocalDataSource();
 
   @override
   AppSettingsModel getSettings() {

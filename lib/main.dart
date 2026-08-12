@@ -66,15 +66,15 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
   // Listen to alarm ring events so we navigate the user to the Dashboard
   // when an alarm fires (works even when app is in background)
-  late final _alarmSubscription = AlarmService()
-      .ringStream
-      .listen((AlarmSet alarmSet) {
-        if (mounted && alarmSet.alarms.isNotEmpty) {
-          // Switch to Dashboard tab (index 0) so user can act on the dose
-          setState(() => _currentIndex = 0);
-          navTabNotifier.value = 0;
-        }
-      });
+  late final _alarmSubscription = AlarmService().ringStream.listen((
+    AlarmSet alarmSet,
+  ) {
+    if (mounted && alarmSet.alarms.isNotEmpty) {
+      // Switch to Dashboard tab (index 0) so user can act on the dose
+      setState(() => _currentIndex = 0);
+      navTabNotifier.value = 0;
+    }
+  });
 
   @override
   void initState() {

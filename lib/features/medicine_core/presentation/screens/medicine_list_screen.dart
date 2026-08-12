@@ -50,7 +50,10 @@ class MedicineListScreen extends ConsumerWidget {
         children: [
           // Search & Filter Header
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 8.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 14.0,
+              vertical: 8.0,
+            ),
             child: Column(
               children: [
                 // Live Search Input Bar
@@ -60,17 +63,25 @@ class MedicineListScreen extends ConsumerWidget {
                   },
                   decoration: InputDecoration(
                     hintText: 'Search medicine name, form, strength...',
-                    prefixIcon: const Icon(Icons.search_rounded,
-                        color: AppColors.primary, size: 20),
-                    contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    prefixIcon: const Icon(
+                      Icons.search_rounded,
+                      color: AppColors.primary,
+                      size: 20,
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
                     suffixIcon: searchQuery.isNotEmpty
                         ? IconButton(
                             icon: const Icon(Icons.clear_rounded, size: 18),
                             onPressed: () {
                               ref
-                                  .read(medicineSearchQueryProvider.notifier)
-                                  .state = '';
+                                      .read(
+                                        medicineSearchQueryProvider.notifier,
+                                      )
+                                      .state =
+                                  '';
                             },
                           )
                         : null,
@@ -85,8 +96,8 @@ class MedicineListScreen extends ConsumerWidget {
                     final count = filter == 'All'
                         ? allMedicines.length
                         : filter == 'Active'
-                            ? allMedicines.where((m) => m.isActive).length
-                            : allMedicines.where((m) => !m.isActive).length;
+                        ? allMedicines.where((m) => m.isActive).length
+                        : allMedicines.where((m) => !m.isActive).length;
 
                     return Padding(
                       padding: const EdgeInsets.only(right: 8.0),
@@ -101,8 +112,8 @@ class MedicineListScreen extends ConsumerWidget {
                             color: isSelected
                                 ? Colors.white
                                 : (isDark
-                                    ? AppColors.darkTextPrimary
-                                    : AppColors.lightTextPrimary),
+                                      ? AppColors.darkTextPrimary
+                                      : AppColors.lightTextPrimary),
                           ),
                         ),
                         selectedColor: AppColors.primary,
@@ -113,14 +124,15 @@ class MedicineListScreen extends ConsumerWidget {
                           color: isSelected
                               ? AppColors.primary
                               : (isDark
-                                  ? AppColors.darkBorder
-                                  : AppColors.lightBorder),
+                                    ? AppColors.darkBorder
+                                    : AppColors.lightBorder),
                         ),
                         onSelected: (selected) {
                           if (selected) {
                             ref
-                                .read(medicineStatusFilterProvider.notifier)
-                                .state = filter;
+                                    .read(medicineStatusFilterProvider.notifier)
+                                    .state =
+                                filter;
                           }
                         },
                       ),
@@ -173,327 +185,383 @@ class MedicineListScreen extends ConsumerWidget {
                   )
                 : ListView.builder(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 6),
+                      horizontal: 14,
+                      vertical: 6,
+                    ),
                     itemCount: medicines.length,
                     itemBuilder: (context, index) {
                       final med = medicines[index];
 
-
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 10),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).cardColor,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: med.isActive
-                          ? AppColors.primary.withValues(alpha: 0.3)
-                          : (isDark
-                              ? AppColors.darkBorder
-                              : AppColors.lightBorder),
-                      width: 1,
-                    ),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: Stack(
-                      children: [
-                        // Compact Left Accent Bar
-                        Positioned(
-                          left: 0,
-                          top: 0,
-                          bottom: 0,
-                          child: Container(
-                            width: 4,
-                            decoration: BoxDecoration(
-                              gradient: med.isActive
-                                  ? AppColors.primaryGradient
-                                  : AppColors.skippedGradient,
-                            ),
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 10),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).cardColor,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: med.isActive
+                                ? AppColors.primary.withValues(alpha: 0.3)
+                                : (isDark
+                                      ? AppColors.darkBorder
+                                      : AppColors.lightBorder),
+                            width: 1,
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(14, 10, 10, 10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: Stack(
                             children: [
-                              // Top Row: Icon + Name/Type + Status Badge
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                      gradient: med.isActive
-                                          ? AppColors.primaryGradient
-                                          : null,
-                                      color: med.isActive
-                                          ? null
-                                          : (isDark
-                                              ? const Color(0xFF334155)
-                                              : const Color(0xFFE2E8F0)),
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: Icon(
-                                      _getIconForType(med.type),
-                                      color: med.isActive
-                                          ? Colors.white
-                                          : Colors.grey,
-                                      size: 18,
-                                    ),
+                              // Compact Left Accent Bar
+                              Positioned(
+                                left: 0,
+                                top: 0,
+                                bottom: 0,
+                                child: Container(
+                                  width: 4,
+                                  decoration: BoxDecoration(
+                                    gradient: med.isActive
+                                        ? AppColors.primaryGradient
+                                        : AppColors.skippedGradient,
                                   ),
-                                  const SizedBox(width: 10),
-                                  Expanded(
-                                    child: Column(
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(
+                                  14,
+                                  10,
+                                  10,
+                                  10,
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    // Top Row: Icon + Name/Type + Status Badge
+                                    Row(
                                       crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                          CrossAxisAlignment.center,
                                       children: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Expanded(
-                                              child: Text(
-                                                med.name,
+                                        Container(
+                                          padding: const EdgeInsets.all(8),
+                                          decoration: BoxDecoration(
+                                            gradient: med.isActive
+                                                ? AppColors.primaryGradient
+                                                : null,
+                                            color: med.isActive
+                                                ? null
+                                                : (isDark
+                                                      ? const Color(0xFF334155)
+                                                      : const Color(
+                                                          0xFFE2E8F0,
+                                                        )),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                          ),
+                                          child: Icon(
+                                            _getIconForType(med.type),
+                                            color: med.isActive
+                                                ? Colors.white
+                                                : Colors.grey,
+                                            size: 18,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 10),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Expanded(
+                                                    child: Text(
+                                                      med.name,
+                                                      style:
+                                                          GoogleFonts.plusJakartaSans(
+                                                            fontSize: 15,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 6),
+                                                  _buildActiveBadge(
+                                                    med.isActive,
+                                                  ),
+                                                ],
+                                              ),
+                                              Text(
+                                                '${med.type} • ${med.strength}',
+                                                style: GoogleFonts.plusJakartaSans(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w500,
+                                                  color: isDark
+                                                      ? AppColors
+                                                            .darkTextSecondary
+                                                      : AppColors
+                                                            .lightTextSecondary,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+
+                                    if (med.description.isNotEmpty) ...[
+                                      const SizedBox(height: 6),
+                                      Text(
+                                        med.description,
+                                        style: GoogleFonts.plusJakartaSans(
+                                          fontSize: 12,
+                                          color: isDark
+                                              ? AppColors.darkTextPrimary
+                                              : AppColors.lightTextPrimary,
+                                        ),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ],
+
+                                    const SizedBox(height: 8),
+
+                                    // Dose Schedules Pills Row
+                                    Wrap(
+                                      spacing: 4,
+                                      runSpacing: 4,
+                                      children: med.doses.map((dose) {
+                                        return Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                            vertical: 3,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: AppColors.primaryContainer,
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
+                                          ),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              const Icon(
+                                                Icons
+                                                    .access_time_filled_rounded,
+                                                size: 11,
+                                                color: AppColors.primaryDark,
+                                              ),
+                                              const SizedBox(width: 3),
+                                              Text(
+                                                DateFormatter.formatTimeOfDay(
+                                                  dose.timeHour,
+                                                  dose.timeMinute,
+                                                ),
                                                 style:
                                                     GoogleFonts.plusJakartaSans(
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                                overflow: TextOverflow.ellipsis,
+                                                      fontSize: 11,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color:
+                                                          AppColors.primaryDark,
+                                                    ),
                                               ),
-                                            ),
-                                            const SizedBox(width: 6),
-                                            _buildActiveBadge(med.isActive),
-                                          ],
-                                        ),
-                                        Text(
-                                          '${med.type} • ${med.strength}',
-                                          style: GoogleFonts.plusJakartaSans(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w500,
-                                            color: isDark
-                                                ? AppColors.darkTextSecondary
-                                                : AppColors.lightTextSecondary,
+                                            ],
                                           ),
-                                        ),
-                                      ],
+                                        );
+                                      }).toList(),
                                     ),
-                                  ),
-                                ],
-                              ),
 
-                              if (med.description.isNotEmpty) ...[
-                                const SizedBox(height: 6),
-                                Text(
-                                  med.description,
-                                  style: GoogleFonts.plusJakartaSans(
-                                    fontSize: 12,
-                                    color: isDark
-                                        ? AppColors.darkTextPrimary
-                                        : AppColors.lightTextPrimary,
-                                  ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
+                                    const SizedBox(height: 8),
 
-                              const SizedBox(height: 8),
-
-                              // Dose Schedules Pills Row
-                              Wrap(
-                                spacing: 4,
-                                runSpacing: 4,
-                                children: med.doses.map((dose) {
-                                  return Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8, vertical: 3),
-                                    decoration: BoxDecoration(
-                                      color: AppColors.primaryContainer,
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
+                                    // Duration Row
+                                    Row(
                                       children: [
-                                        const Icon(
-                                          Icons.access_time_filled_rounded,
-                                          size: 11,
-                                          color: AppColors.primaryDark,
+                                        Icon(
+                                          Icons.calendar_today_rounded,
+                                          size: 12,
+                                          color: isDark
+                                              ? AppColors.darkTextSecondary
+                                              : AppColors.lightTextSecondary,
                                         ),
-                                        const SizedBox(width: 3),
-                                        Text(
-                                          DateFormatter.formatTimeOfDay(
-                                              dose.timeHour, dose.timeMinute),
-                                          style: GoogleFonts.plusJakartaSans(
-                                            fontSize: 11,
-                                            fontWeight: FontWeight.bold,
-                                            color: AppColors.primaryDark,
+                                        const SizedBox(width: 4),
+                                        Expanded(
+                                          child: Text(
+                                            med.isOngoing
+                                                ? 'Started ${DateFormatter.formatShortDate(med.startDate)} (Ongoing)'
+                                                : '${DateFormatter.formatShortDate(med.startDate)} - ${med.endDate != null ? DateFormatter.formatShortDate(med.endDate!) : "N/A"}',
+                                            style: GoogleFonts.plusJakartaSans(
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.w500,
+                                              color: isDark
+                                                  ? AppColors.darkTextSecondary
+                                                  : AppColors
+                                                        .lightTextSecondary,
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
                                       ],
                                     ),
-                                  );
-                                }).toList(),
-                              ),
 
-                              const SizedBox(height: 8),
-
-                              // Duration Row
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.calendar_today_rounded,
-                                    size: 12,
-                                    color: isDark
-                                        ? AppColors.darkTextSecondary
-                                        : AppColors.lightTextSecondary,
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Expanded(
-                                    child: Text(
-                                      med.isOngoing
-                                          ? 'Started ${DateFormatter.formatShortDate(med.startDate)} (Ongoing)'
-                                          : '${DateFormatter.formatShortDate(med.startDate)} - ${med.endDate != null ? DateFormatter.formatShortDate(med.endDate!) : "N/A"}',
-                                      style: GoogleFonts.plusJakartaSans(
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w500,
-                                        color: isDark
-                                            ? AppColors.darkTextSecondary
-                                            : AppColors.lightTextSecondary,
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
+                                    const SizedBox(height: 8),
+                                    Divider(
+                                      color: isDark
+                                          ? AppColors.darkBorder
+                                          : AppColors.lightBorder,
+                                      height: 1,
                                     ),
-                                  ),
-                                ],
-                              ),
+                                    const SizedBox(height: 6),
 
-                              const SizedBox(height: 8),
-                              Divider(
-                                color: isDark
-                                    ? AppColors.darkBorder
-                                    : AppColors.lightBorder,
-                                height: 1,
-                              ),
-                              const SizedBox(height: 6),
-
-                              // Compact Action Buttons Row
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  // Pause / Resume Button
-                                  OutlinedButton.icon(
-                                    onPressed: () {
-                                      ref
-                                          .read(medicineStateNotifierProvider
-                                              .notifier)
-                                          .toggleMedicineActive(med.id);
-                                    },
-                                    style: OutlinedButton.styleFrom(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 10, vertical: 4),
-                                      minimumSize: Size.zero,
-                                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                    ),
-                                    icon: Icon(
-                                      med.isActive
-                                          ? Icons.pause_circle_outline_rounded
-                                          : Icons.play_circle_outline_rounded,
-                                      size: 14,
-                                    ),
-                                    label: Text(
-                                      med.isActive ? 'Pause' : 'Resume',
-                                      style: GoogleFonts.plusJakartaSans(
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 6),
-
-                                  // Edit Button
-                                  ElevatedButton.icon(
-                                    onPressed: () {
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              AddEditMedicineScreen(
-                                            existingMedicine: med,
+                                    // Compact Action Buttons Row
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        // Pause / Resume Button
+                                        OutlinedButton.icon(
+                                          onPressed: () {
+                                            ref
+                                                .read(
+                                                  medicineStateNotifierProvider
+                                                      .notifier,
+                                                )
+                                                .toggleMedicineActive(med.id);
+                                          },
+                                          style: OutlinedButton.styleFrom(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 10,
+                                              vertical: 4,
+                                            ),
+                                            minimumSize: Size.zero,
+                                            tapTargetSize: MaterialTapTargetSize
+                                                .shrinkWrap,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                            ),
+                                          ),
+                                          icon: Icon(
+                                            med.isActive
+                                                ? Icons
+                                                      .pause_circle_outline_rounded
+                                                : Icons
+                                                      .play_circle_outline_rounded,
+                                            size: 14,
+                                          ),
+                                          label: Text(
+                                            med.isActive ? 'Pause' : 'Resume',
+                                            style: GoogleFonts.plusJakartaSans(
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                           ),
                                         ),
-                                      );
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 12, vertical: 4),
-                                      minimumSize: Size.zero,
-                                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                    ),
-                                    icon: const Icon(Icons.edit_rounded,
-                                        size: 14),
-                                    label: Text(
-                                      'Edit',
-                                      style: GoogleFonts.plusJakartaSans(
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 4),
+                                        const SizedBox(width: 6),
 
-                                  // Delete Button
-                                  IconButton(
-                                    icon: const Icon(
-                                        Icons.delete_outline_rounded,
-                                        color: Colors.redAccent, size: 18),
-                                    padding: EdgeInsets.zero,
-                                    constraints: const BoxConstraints(),
-                                    visualDensity: VisualDensity.compact,
-                                    onPressed: () async {
-                                      final confirm = await showDialog<bool>(
-                                        context: context,
-                                        builder: (ctx) => AlertDialog(
-                                          title: const Text('Delete Medicine'),
-                                          content: Text(
-                                              'Are you sure you want to delete ${med.name}?'),
-                                          actions: [
-                                            TextButton(
-                                              onPressed: () =>
-                                                  Navigator.of(ctx).pop(false),
-                                              child: const Text('Cancel'),
-                                            ),
-                                            ElevatedButton(
-                                              style: ElevatedButton.styleFrom(
-                                                backgroundColor: Colors.red,
+                                        // Edit Button
+                                        ElevatedButton.icon(
+                                          onPressed: () {
+                                            Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    AddEditMedicineScreen(
+                                                      existingMedicine: med,
+                                                    ),
                                               ),
-                                              onPressed: () =>
-                                                  Navigator.of(ctx).pop(true),
-                                              child: const Text('Delete'),
+                                            );
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 12,
+                                              vertical: 4,
                                             ),
-                                          ],
+                                            minimumSize: Size.zero,
+                                            tapTargetSize: MaterialTapTargetSize
+                                                .shrinkWrap,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                            ),
+                                          ),
+                                          icon: const Icon(
+                                            Icons.edit_rounded,
+                                            size: 14,
+                                          ),
+                                          label: Text(
+                                            'Edit',
+                                            style: GoogleFonts.plusJakartaSans(
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
                                         ),
-                                      );
-                                      if (confirm == true) {
-                                        ref
-                                            .read(medicineStateNotifierProvider
-                                                .notifier)
-                                            .deleteMedicine(med.id);
-                                      }
-                                    },
-                                  ),
-                                ],
+                                        const SizedBox(width: 4),
+
+                                        // Delete Button
+                                        IconButton(
+                                          icon: const Icon(
+                                            Icons.delete_outline_rounded,
+                                            color: Colors.redAccent,
+                                            size: 18,
+                                          ),
+                                          padding: EdgeInsets.zero,
+                                          constraints: const BoxConstraints(),
+                                          visualDensity: VisualDensity.compact,
+                                          onPressed: () async {
+                                            final confirm = await showDialog<bool>(
+                                              context: context,
+                                              builder: (ctx) => AlertDialog(
+                                                title: const Text(
+                                                  'Delete Medicine',
+                                                ),
+                                                content: Text(
+                                                  'Are you sure you want to delete ${med.name}?',
+                                                ),
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed: () =>
+                                                        Navigator.of(
+                                                          ctx,
+                                                        ).pop(false),
+                                                    child: const Text('Cancel'),
+                                                  ),
+                                                  ElevatedButton(
+                                                    style:
+                                                        ElevatedButton.styleFrom(
+                                                          backgroundColor:
+                                                              Colors.red,
+                                                        ),
+                                                    onPressed: () =>
+                                                        Navigator.of(
+                                                          ctx,
+                                                        ).pop(true),
+                                                    child: const Text('Delete'),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                            if (confirm == true) {
+                                              ref
+                                                  .read(
+                                                    medicineStateNotifierProvider
+                                                        .notifier,
+                                                  )
+                                                  .deleteMedicine(med.id);
+                                            }
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
                             ],
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                );
+                      );
                     },
                   ),
           ),
@@ -501,7 +569,6 @@ class MedicineListScreen extends ConsumerWidget {
       ),
     );
   }
-
 
   Widget _buildActiveBadge(bool isActive) {
     return Container(

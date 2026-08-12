@@ -7,13 +7,19 @@ import 'package:med_reminder/features/medicine_core/data/models/dose_status_enum
 
 final historySearchQueryProvider = StateProvider<String>((ref) => '');
 final historyDateFilterProvider = StateProvider<DateTime?>((ref) => null);
-final historyDateRangeFilterProvider = StateProvider<DateTimeRange?>((ref) => null);
-final historyStatusFilterProvider = StateProvider<DoseStatusEnum?>((ref) => null);
-final historyTimeScopeProvider =
-    StateProvider<HistoryTimeScope>((ref) => HistoryTimeScope.pastAndToday);
+final historyDateRangeFilterProvider = StateProvider<DateTimeRange?>(
+  (ref) => null,
+);
+final historyStatusFilterProvider = StateProvider<DoseStatusEnum?>(
+  (ref) => null,
+);
+final historyTimeScopeProvider = StateProvider<HistoryTimeScope>(
+  (ref) => HistoryTimeScope.pastAndToday,
+);
 
-final filteredHistoryOccurrencesProvider =
-    Provider<List<DoseOccurrenceModel>>((ref) {
+final filteredHistoryOccurrencesProvider = Provider<List<DoseOccurrenceModel>>((
+  ref,
+) {
   final occurrences = ref.watch(allOccurrencesProvider);
   final searchQuery = ref.watch(historySearchQueryProvider);
   final dateFilter = ref.watch(historyDateFilterProvider);
@@ -30,4 +36,3 @@ final filteredHistoryOccurrencesProvider =
     timeScope: timeScope,
   );
 });
-

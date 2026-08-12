@@ -60,7 +60,10 @@ class DoseInputTile extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: AppColors.primaryContainer,
                   borderRadius: BorderRadius.circular(10),
@@ -76,7 +79,11 @@ class DoseInputTile extends StatelessWidget {
               ),
               IconButton(
                 onPressed: onDelete,
-                icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent, size: 20),
+                icon: const Icon(
+                  Icons.delete_outline_rounded,
+                  color: Colors.redAccent,
+                  size: 20,
+                ),
                 visualDensity: VisualDensity.compact,
               ),
             ],
@@ -96,16 +103,23 @@ class DoseInputTile extends StatelessWidget {
                       vertical: 13,
                     ),
                     decoration: BoxDecoration(
-                      color: isDark ? AppColors.darkSurface : const Color(0xFFF8FAFC),
+                      color: isDark
+                          ? AppColors.darkSurface
+                          : const Color(0xFFF8FAFC),
                       border: Border.all(
-                        color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+                        color: isDark
+                            ? AppColors.darkBorder
+                            : AppColors.lightBorder,
                       ),
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.access_time_rounded,
-                            size: 18, color: AppColors.primary),
+                        const Icon(
+                          Icons.access_time_rounded,
+                          size: 18,
+                          color: AppColors.primary,
+                        ),
                         const SizedBox(width: 8),
                         Text(
                           DateFormatter.formatTimeOfDay(
@@ -115,7 +129,9 @@ class DoseInputTile extends StatelessWidget {
                           style: GoogleFonts.plusJakartaSans(
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
-                            color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                            color: isDark
+                                ? AppColors.darkTextPrimary
+                                : AppColors.lightTextPrimary,
                           ),
                         ),
                       ],
@@ -129,8 +145,9 @@ class DoseInputTile extends StatelessWidget {
                 flex: 1,
                 child: TextFormField(
                   initialValue: data.quantity.toString(),
-                  keyboardType:
-                      const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
                   decoration: const InputDecoration(
                     labelText: 'Qty',
                     isDense: true,

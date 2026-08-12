@@ -5,7 +5,8 @@ class AppConstants {
 
   static const String notificationChannelId = 'med_reminder_high_importance';
   static const String notificationChannelName = 'Medicine Reminders';
-  static const String notificationChannelDescription = 'Notifications for medicine doses';
+  static const String notificationChannelDescription =
+      'Notifications for medicine doses';
 
   // Rolling scheduling window for ongoing medicines (in days)
   static const int ongoingScheduleWindowDays = 30;

@@ -30,8 +30,9 @@ class NotificationService {
     tz.initializeTimeZones();
     _setLocalTimezone();
 
-    const androidSettings =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+    const androidSettings = AndroidInitializationSettings(
+      '@mipmap/ic_launcher',
+    );
     const darwinSettings = DarwinInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,
@@ -48,7 +49,8 @@ class NotificationService {
       onDidReceiveNotificationResponse: (details) {
         // Foreground / tapped notification — payload contains occurrenceId
       },
-      onDidReceiveBackgroundNotificationResponse: _notificationBackgroundHandler,
+      onDidReceiveBackgroundNotificationResponse:
+          _notificationBackgroundHandler,
     );
 
     _initialized = true;
@@ -80,16 +82,20 @@ class NotificationService {
   }
 
   Future<void> requestPermissions() async {
-    final androidImplementation =
-        _notificationsPlugin.resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>();
+    final androidImplementation = _notificationsPlugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
     if (androidImplementation != null) {
       await androidImplementation.requestNotificationsPermission();
       await androidImplementation.requestExactAlarmsPermission();
       // Request battery optimization exemption and Xiaomi autostart permission ONLY ONCE
       final box = await Hive.openBox('app_flags');
-      final hasRequestedBackground = box.get('hasRequestedBackground', defaultValue: false);
-      
+      final hasRequestedBackground = box.get(
+        'hasRequestedBackground',
+        defaultValue: false,
+      );
+
       if (!hasRequestedBackground) {
         await _requestBatteryOptimizationExemption();
         await _requestAutostartPermission();
@@ -97,9 +103,10 @@ class NotificationService {
       }
     }
 
-    final iosImplementation =
-        _notificationsPlugin.resolvePlatformSpecificImplementation<
-            IOSFlutterLocalNotificationsPlugin>();
+    final iosImplementation = _notificationsPlugin
+        .resolvePlatformSpecificImplementation<
+          IOSFlutterLocalNotificationsPlugin
+        >();
     if (iosImplementation != null) {
       await iosImplementation.requestPermissions(
         alert: true,
@@ -276,83 +283,4 @@ class NotificationService {
     await AlarmService().cancelAllAlarms();
     await _notificationsPlugin.cancelAll();
   }
-
-  Future<void> showTestNotification() async {
-    const androidDetails = AndroidNotificationDetails(
-      AppConstants.notificationChannelId,
-      AppConstants.notificationChannelName,
-      channelDescription: AppConstants.notificationChannelDescription,
-      importance: Importance.max,
-      priority: Priority.high,
-      color: Color(0xFF00796B),
-    );
-    const iosDetails = DarwinNotificationDetails(
-      presentAlert: true,
-      presentBadge: true,
-      presentSound: true,
-    );
-    const details = NotificationDetails(android: androidDetails, iOS: iosDetails);
-
-    await _notificationsPlugin.show(
-      99999,
-      '💊 Med Reminder Test',
-      'Instant test notification working!',
-      details,
-    );
-  }
-
-  Future<void> scheduleTestNotification({int delaySeconds = 10}) async {
-    final scheduledDateTime = DateTime.now().add(Duration(seconds: delaySeconds));
-    final id = 99998;
-    final tzScheduledDate = tz.TZDateTime(
-      tz.local,
-      scheduledDateTime.year,
-      scheduledDateTime.month,
-      scheduledDateTime.day,
-      scheduledDateTime.hour,
-      scheduledDateTime.minute,
-      scheduledDateTime.second,
-    );
-
-    const androidDetails = AndroidNotificationDetails(
-      AppConstants.notificationChannelId,
-      AppConstants.notificationChannelName,
-      channelDescription: AppConstants.notificationChannelDescription,
-      importance: Importance.max,
-      priority: Priority.high,
-      color: Color(0xFF00796B),
-      category: AndroidNotificationCategory.alarm,
-    );
-    const iosDetails = DarwinNotificationDetails(
-      presentAlert: true,
-      presentBadge: true,
-      presentSound: true,
-    );
-    const details = NotificationDetails(android: androidDetails, iOS: iosDetails);
-
-    try {
-      await _notificationsPlugin.zonedSchedule(
-        id,
-        '⏰ Test Background Alarm (10s)',
-        'The alarm fired successfully while the app was closed!',
-        tzScheduledDate,
-        details,
-        androidScheduleMode: AndroidScheduleMode.alarmClock,
-        uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime,
-      );
-    } catch (_) {
-      await _notificationsPlugin.zonedSchedule(
-        id,
-        '⏰ Test Background Alarm (10s)',
-        'The alarm fired successfully while the app was closed!',
-        tzScheduledDate,
-        details,
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-        uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime,
-      );
-    }
-  }
 }
-

@@ -16,8 +16,8 @@ class MedicineRepositoryImpl implements MedicineRepository {
   MedicineRepositoryImpl({
     MedicineLocalDataSource? localDataSource,
     NotificationService? notificationService,
-  })  : _localDataSource = localDataSource ?? MedicineLocalDataSource(),
-        _notificationService = notificationService ?? NotificationService();
+  }) : _localDataSource = localDataSource ?? MedicineLocalDataSource(),
+       _notificationService = notificationService ?? NotificationService();
 
   @override
   List<MedicineModel> getAllMedicines() {
@@ -46,7 +46,9 @@ class MedicineRepositoryImpl implements MedicineRepository {
     }
 
     if (toRemove.isNotEmpty) {
-      final updatedList = existingAll.where((occ) => !toRemove.contains(occ.id)).toList();
+      final updatedList = existingAll
+          .where((occ) => !toRemove.contains(occ.id))
+          .toList();
       await _localDataSource.saveOccurrences(updatedList);
     }
 

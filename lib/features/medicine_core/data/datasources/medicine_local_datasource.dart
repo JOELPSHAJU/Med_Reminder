@@ -25,7 +25,7 @@ class MedicineLocalDataSource {
 
   Future<void> saveOccurrences(List<DoseOccurrenceModel> occurrences) async {
     final Map<String, DoseOccurrenceModel> entries = {
-      for (final occ in occurrences) occ.id: occ
+      for (final occ in occurrences) occ.id: occ,
     };
     await HiveService.occurrenceBox.putAll(entries);
   }
@@ -37,7 +37,9 @@ class MedicineLocalDataSource {
   Future<void> deleteOccurrencesForMedicine(String medicineId) async {
     final box = HiveService.occurrenceBox;
     final keysToDelete = box.values
-        .where((occ) => occ.medicineId == medicineId && occ.status.name == 'pending')
+        .where(
+          (occ) => occ.medicineId == medicineId && occ.status.name == 'pending',
+        )
         .map((occ) => occ.id)
         .toList();
     await box.deleteAll(keysToDelete);
